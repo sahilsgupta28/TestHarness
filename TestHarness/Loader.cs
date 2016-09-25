@@ -101,6 +101,31 @@ namespace TestHarness
             return true;
         }
 
+        public void ExecuteTest()
+        {
+            if (TestDrivers.Count == 0)
+            {
+                return;
+            }
+
+            Console.WriteLine("\nExecuting Tests...");
+            Console.WriteLine("\nCurrent Domain : {0}", AppDomain.CurrentDomain.FriendlyName);
+
+            foreach (TestData td in TestDrivers)
+            {
+                Console.WriteLine("Testing {0}", td.Name);
+
+                if (td.TestDriver.test() == true)
+                {
+                    Console.WriteLine("Test Passed\n");
+                }
+                else
+                {
+                    Console.WriteLine("Test Failed\n");
+                }
+            }
+        }
+
         public void Display()
         {
             Console.WriteLine("\nAssemblies Loaded:");
@@ -108,6 +133,15 @@ namespace TestHarness
             {
                 Console.WriteLine("{0}", TestData.Name);
             }
+        }
+
+        public void DisplayAssemblies(AppDomain Domain)
+        {
+            Console.WriteLine("\nListing Assemblies in Domain ({0})", Domain.FriendlyName);
+            Assembly[] loadedAssemblies = Domain.GetAssemblies();
+
+            foreach (Assembly a in loadedAssemblies)
+                Console.WriteLine("Assembly -> Name: ({0}) Version: ({1})", a.GetName().Name, a.GetName().Version);
         }
     }
 }

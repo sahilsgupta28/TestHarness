@@ -70,10 +70,10 @@ namespace TestHarness
 
                 /* Display Loaded Assemblies */
                 DisplayAssemblies(AppDomain.CurrentDomain);
-                //DisplayAssemblies(ChildDomain);
+                load.DisplayAssemblies(ChildDomain);
 
                 /* Execute Test */
-                //ExecuteTest(load.TestDrivers);
+                load.ExecuteTest();
 
             }
             catch (Exception Ex)
@@ -89,31 +89,6 @@ namespace TestHarness
                 }
             }
             return true;
-        }
-
-        void ExecuteTest(List<Loader.TestData> TestCase)
-        {
-            if (TestCase.Count == 0)
-            {
-                return;
-            }
-
-            Console.WriteLine("\nExecuting Tests...");
-            Console.WriteLine("\nCurrent Domain : {0}", AppDomain.CurrentDomain.FriendlyName);
-
-            foreach (Loader.TestData td in TestCase)
-            {
-                Console.WriteLine("Testing {0}", td.Name);
-
-                if (td.TestDriver.test() == true)
-                {
-                    Console.WriteLine("Test Passed\n");
-                }
-                else
-                {
-                    Console.WriteLine("Test Failed\n");
-                }
-            }
         }
 
         private void DisplayAssemblies(AppDomain Domain)
