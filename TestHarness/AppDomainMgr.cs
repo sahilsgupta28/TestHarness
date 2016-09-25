@@ -43,13 +43,13 @@ namespace TestHarness
 
                 Parser.DisplayTestRequest();
 
-                /* @todo Load Assembly */
+                /* Load Assembly */
                 Loader load = new Loader();
                 load.LoadAssemblies(RepositoryPath, Parser.TestCase);
 
                 load.Display();
 
-                /* @todo Execute Test */
+                /* Execute Test */
                 ExecuteTest(load.TestDrivers);
 
             }
@@ -68,17 +68,19 @@ namespace TestHarness
                 return;
             }
 
+            Console.WriteLine("\nExecuting Tests...");
+
             foreach (Loader.TestData td in TestCase)
             {
                 Console.WriteLine("Testing {0}", td.Name);
 
                 if (td.TestDriver.test() == true)
                 {
-                    Console.WriteLine("Test Passed");
+                    Console.WriteLine("Test Passed\n");
                 }
                 else
                 {
-                    Console.WriteLine("Test Failed");
+                    Console.WriteLine("Test Failed\n");
                 }
             }
         }
