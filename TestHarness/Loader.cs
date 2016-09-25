@@ -17,7 +17,7 @@ using TestInterface;
 
 namespace TestHarness
 {
-    class Loader
+    class Loader : MarshalByRefObject
     {
         public struct TestData
         {
@@ -34,6 +34,8 @@ namespace TestHarness
             try
             {
                 Console.WriteLine("\nLoading Assemblies...");
+                Console.WriteLine("Current Domain : {0}", AppDomain.CurrentDomain.FriendlyName);
+
                 foreach (var test in TestCase)
                 {
                     bool bRet;
@@ -49,13 +51,19 @@ namespace TestHarness
                     Console.WriteLine("Found assembly: {0}", filepath);
 
                     Assembly assem = Assembly.LoadFrom(filepath);
+                    if (assem == null)
+                    {
+                        Console.WriteLine("Could not load assembly ({0})", filepath);
+                        continue;
+                    }
+
                     Type[] types = assem.GetExportedTypes();
 
                     foreach (Type t in types)
                     {
                         if (t.IsClass && typeof(ITest).IsAssignableFrom(t))  // does this type derive from ITest ?
                         {
-                            Console.WriteLine("Loading assembly: {0}", t.Name);
+                            Console.WriteLine("Loading Class: {0}", t.FullName);
                             ITest testdriver = (ITest)Activator.CreateInstance(t);    // create instance of test driver
 
                             //save type name and reference to created type on managed heap

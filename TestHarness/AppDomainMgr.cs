@@ -9,7 +9,9 @@
  */
 
 using System;
+using System.Reflection;
 using System.Collections.Generic;
+using System.Security.Policy;
 
 namespace TestHarness
 {
@@ -25,15 +27,25 @@ namespace TestHarness
         public bool ProcessTestRequest(string sTestRequest)
         {
             bool bRet;
+            AppDomain ChildDomain = null;
 
             try
             {
                 Console.WriteLine("Processing Test Request ({0})", sTestRequest);
 
-                /* @todo Create App Domain */
+                /* Create App Domain */
+                AppDomainSetup domaininfo = new AppDomainSetup();
+                domaininfo.ApplicationBase = Environment.CurrentDirectory;
+                Evidence adevidence = AppDomain.CurrentDomain.Evidence;
+                ChildDomain = AppDomain.CreateDomain("ChildDomain", adevidence, domaininfo);
+
+                Console.WriteLine("\nCurrent Domain : {0}", AppDomain.CurrentDomain.FriendlyName);
+                Console.WriteLine("New Domain : {0}", ChildDomain.FriendlyName);
 
                 /* Parse Test Request to extract data */
-                XmlParser Parser = new XmlParser();
+                //XmlParser Parser = new XmlParser();
+                Type tXmlParser = typeof(XmlParser);
+                XmlParser Parser = (XmlParser)ChildDomain.CreateInstanceAndUnwrap(Assembly.GetAssembly(tXmlParser).FullName, tXmlParser.ToString());
                 bRet = Parser.ParseTestRequest(sTestRequest);
                 if (false == bRet)
                 {
@@ -44,20 +56,38 @@ namespace TestHarness
                 Parser.DisplayTestRequest();
 
                 /* Load Assembly */
-                Loader load = new Loader();
-                load.LoadAssemblies(RepositoryPath, Parser.TestCase);
+                //Loader load = new Loader();
+                Type tLoader= typeof(Loader);
+                Loader load= (Loader)ChildDomain.CreateInstanceAndUnwrap(Assembly.GetAssembly(tLoader).FullName, tLoader.ToString()); 
+                bRet = load.LoadAssemblies(RepositoryPath, Parser.TestCase);
+                if (false == bRet)
+                {
+                    Console.WriteLine(" load.LoadAssemblies({0})...FAILED", sTestRequest);
+                    return false;
+                }
 
                 load.Display();
 
+                /* Display Loaded Assemblies */
+                DisplayAssemblies(AppDomain.CurrentDomain);
+                //DisplayAssemblies(ChildDomain);
+
                 /* Execute Test */
-                ExecuteTest(load.TestDrivers);
+                //ExecuteTest(load.TestDrivers);
 
             }
             catch (Exception Ex)
             {
                 Console.WriteLine("Exception : {0}", Ex.Message);
             }
-
+            finally
+            {
+                if (ChildDomain != null)
+                {
+                    AppDomain.Unload(ChildDomain);
+                    Console.WriteLine("Unloaded Child AppDomain");
+                }
+            }
             return true;
         }
 
@@ -69,6 +99,7 @@ namespace TestHarness
             }
 
             Console.WriteLine("\nExecuting Tests...");
+            Console.WriteLine("\nCurrent Domain : {0}", AppDomain.CurrentDomain.FriendlyName);
 
             foreach (Loader.TestData td in TestCase)
             {
@@ -83,6 +114,15 @@ namespace TestHarness
                     Console.WriteLine("Test Failed\n");
                 }
             }
+        }
+
+        private void DisplayAssemblies(AppDomain Domain)
+        {
+            Console.WriteLine("\nListing Assemblies in Domain ({0})", Domain.FriendlyName);
+            Assembly[] loadedAssemblies = Domain.GetAssemblies();
+
+            foreach (Assembly a in loadedAssemblies)
+                Console.WriteLine("Assembly -> Name: ({0}) Version: ({1})", a.GetName().Name, a.GetName().Version);
         }
     }
 }
