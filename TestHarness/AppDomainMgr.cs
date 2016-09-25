@@ -5,6 +5,7 @@
  * FileName     : AppDomainMgr.cs
  * Author       : Sahil Gupta
  * Date         : 24 September 2016 
+ * Version      : 1.0
  */
 
 using System;
