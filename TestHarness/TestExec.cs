@@ -17,11 +17,11 @@ namespace TestHarness
     class TestExec
     {
         Queue<string> TestQueue;
-        public string RespoitoryPath { get; set; }
+        public string RepositoryPath { get; set; }
 
         public TestExec(string path)
         {
-            RespoitoryPath = path;
+            RepositoryPath = path;
             TestQueue = new Queue<string>();
         }
 
@@ -44,7 +44,7 @@ namespace TestHarness
         public void ProcessTestRequests()
         {
             bool bRet;
-            AppDomainMgr appDomainMgr = new AppDomainMgr();
+            AppDomainMgr appDomainMgr = new AppDomainMgr(RepositoryPath);
 
             do
             {

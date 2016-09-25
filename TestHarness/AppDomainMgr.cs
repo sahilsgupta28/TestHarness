@@ -9,11 +9,19 @@
  */
 
 using System;
+using System.Collections.Generic;
 
 namespace TestHarness
 {
     class AppDomainMgr
     {
+        public string RepositoryPath { get; set; }
+
+        public AppDomainMgr(string path)
+        {
+            RepositoryPath = path;
+        }
+
         public bool ProcessTestRequest(string sTestRequest)
         {
             bool bRet;
@@ -36,8 +44,14 @@ namespace TestHarness
                 Parser.DisplayTestRequest();
 
                 /* @todo Load Assembly */
+                Loader load = new Loader();
+                load.LoadAssemblies(RepositoryPath, Parser.TestCase);
+
+                load.Display();
 
                 /* @todo Execute Test */
+                ExecuteTest(load.TestDrivers);
+
             }
             catch (Exception Ex)
             {
@@ -45,6 +59,28 @@ namespace TestHarness
             }
 
             return true;
+        }
+
+        void ExecuteTest(List<Loader.TestData> TestCase)
+        {
+            if (TestCase.Count == 0)
+            {
+                return;
+            }
+
+            foreach (Loader.TestData td in TestCase)
+            {
+                Console.WriteLine("Testing {0}", td.Name);
+
+                if (td.TestDriver.test() == true)
+                {
+                    Console.WriteLine("Test Passed");
+                }
+                else
+                {
+                    Console.WriteLine("Test Failed");
+                }
+            }
         }
     }
 }

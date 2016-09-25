@@ -43,7 +43,7 @@ namespace TestHarness
     public class XmlParser
     {
         private XDocument xDoc;
-        private List<TestCaseData> TestCase;
+        public List<TestCaseData> TestCase;
 
         public XmlParser()
         {
