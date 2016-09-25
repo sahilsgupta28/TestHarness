@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<TestRequest>
+  <Version>1</Version>
+  <Author>Sahil Gupta</Author>
+  <Test Name ="Demo Test">
+    <TestDriver>TestCode_TestDriver.dll</TestDriver>
+    <Library>TestCode.dll</Library>
+  </Test>
+  <Test Name ="Math Library">
+    <TestDriver>Math_TestDriver.dll</TestDriver>
+    <Library>Math.dll</Library>
+    <Library>MathAdvance.dll</Library>
+  </Test>
+</TestRequest>
