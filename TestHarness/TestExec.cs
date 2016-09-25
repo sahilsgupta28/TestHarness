@@ -1,9 +1,6 @@
 ﻿/**
  * Test Executive
- * Entry point for Test Harness
- * 
- * Usage
- *      TestHarness.exe repository_path testrequest1_path [(...)]
+ * Holds test requests and passes them to AppDomainMgr for processing
  *      
  * FileName     : TestExec.cs
  * Author       : Sahil Gupta
@@ -13,54 +10,54 @@
 
 using System;
 using System.IO;
+using System.Collections.Generic;
 
 namespace TestHarness
 {
     class TestExec
     {
-        static void Main(string[] args)
+        Queue<string> TestQueue;
+        public string RespoitoryPath { get; set; }
+
+        public TestExec(string path)
         {
-            /*  Validate input
-             *  Checks if file exists 
-             */
-            if (0 == args.Length)
-            {
-                Console.WriteLine("Enter Repository path");
-                return;
-            }
+            RespoitoryPath = path;
+            TestQueue = new Queue<string>();
+        }
 
-            if (!Directory.Exists(args[0]))
-            {
-                Console.WriteLine("Invalid Path {0}", args[0]);
-                return;
-            }
+        public void EnqueueTestRequest(string TestRequestFile)
+        {
+            TestQueue.Enqueue(TestRequestFile);
+            Console.WriteLine("En-queued ({0})", TestRequestFile);
+        }
 
-            Console.WriteLine("Repository Path : {0}", args[0]);
+        public string DequeueTestRequest()
+        {
+            string TestRequestFile;
 
-            /* @todo En-queue Test Request
-             */
+            TestRequestFile = TestQueue.Dequeue();
+            Console.WriteLine("De-queued ({0})", TestRequestFile);
 
-            /* Create AppDomain Manager
-             *  - @todo De-queues Test Request
-             *  - Creates AppDomain to process TestRequest
-             */
+            return TestRequestFile;
+        }
+
+        public void ProcessTestRequests()
+        {
+            bool bRet;
             AppDomainMgr appDomainMgr = new AppDomainMgr();
 
-            appDomainMgr.RespoitoryPath = args[0];
-
-            if (args.Length > 1)
+            do
             {
-                string[] TestReq = new string[args.Length - 1];
+                string TestRequest = DequeueTestRequest();
 
-                for (int i = 0; i < args.Length - 1; i++)
+                /* Create AppDomain to process individual test request */
+                bRet = appDomainMgr.ProcessTestRequest(TestRequest);
+                if (!bRet)
                 {
-                    TestReq[i] = args[i + 1];
+                    Console.WriteLine("appDomainMgr.ProcessTestRequest({0})...FAILED.", TestRequest);
                 }
 
-                appDomainMgr.ProcessTestRequests(TestReq);
-            }
-
-
+            } while (TestQueue.Count != 0);
         }
     }
 }

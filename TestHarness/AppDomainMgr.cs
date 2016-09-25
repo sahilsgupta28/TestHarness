@@ -14,26 +14,15 @@ namespace TestHarness
 {
     class AppDomainMgr
     {
-        public string RespoitoryPath { get; set; }
-
-        public void ProcessTestRequests(string[] sTestRequests)
-        {
-            /* @todo Dequeue Test Request
-             */
-
-            foreach (string sTestRequest in sTestRequests)
-            {
-                ProcessTestRequest(sTestRequest);
-            }
-        }
-
-        bool ProcessTestRequest(string sTestRequest)
+        public bool ProcessTestRequest(string sTestRequest)
         {
             bool bRet;
 
             try
             {
-                Console.WriteLine("\nParsing({0})", sTestRequest);
+                Console.WriteLine("Processing Test Request ({0})", sTestRequest);
+
+                /* @todo Create App Domain */
 
                 /* Parse Test Request to extract data */
                 XmlParser Parser = new XmlParser();
@@ -46,8 +35,9 @@ namespace TestHarness
 
                 Parser.DisplayTestRequest();
 
-                /* Loader */
+                /* @todo Load Assembly */
 
+                /* @todo Execute Test */
             }
             catch (Exception Ex)
             {

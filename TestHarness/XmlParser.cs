@@ -56,6 +56,8 @@ namespace TestHarness
             FileStream XML = null;
             try
             {
+                Console.WriteLine("Parsing Test Request File ({0})", sTestRequest);
+
                 XML = new FileStream(sTestRequest, System.IO.FileMode.Open);
                 xDoc = XDocument.Load(XML);
                 if (xDoc == null)
