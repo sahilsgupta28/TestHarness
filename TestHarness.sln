@@ -4,6 +4,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestHarness", "TestHarness\TestHarness.csproj", "{5AFFFD69-C53C-47C2-8BDF-C91CE50330BF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A2F7EC10-CBF3-490D-8516-BE9DBAB53D0F} = {A2F7EC10-CBF3-490D-8516-BE9DBAB53D0F}
+		{830D5835-7CE0-4164-8136-959F82617034} = {830D5835-7CE0-4164-8136-959F82617034}
+		{930DC99F-C265-4C39-8796-A395BD149DCD} = {930DC99F-C265-4C39-8796-A395BD149DCD}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestInterface", "TestInterface\TestInterface.csproj", "{930DC99F-C265-4C39-8796-A395BD149DCD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCode", "TestCode\TestCode.csproj", "{A2F7EC10-CBF3-490D-8516-BE9DBAB53D0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCode_TestDriver", "TestCode_TestDriver\TestCode_TestDriver.csproj", "{830D5835-7CE0-4164-8136-959F82617034}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +26,18 @@ Global
 		{5AFFFD69-C53C-47C2-8BDF-C91CE50330BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AFFFD69-C53C-47C2-8BDF-C91CE50330BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AFFFD69-C53C-47C2-8BDF-C91CE50330BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{930DC99F-C265-4C39-8796-A395BD149DCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{930DC99F-C265-4C39-8796-A395BD149DCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{930DC99F-C265-4C39-8796-A395BD149DCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{930DC99F-C265-4C39-8796-A395BD149DCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2F7EC10-CBF3-490D-8516-BE9DBAB53D0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2F7EC10-CBF3-490D-8516-BE9DBAB53D0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2F7EC10-CBF3-490D-8516-BE9DBAB53D0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2F7EC10-CBF3-490D-8516-BE9DBAB53D0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{830D5835-7CE0-4164-8136-959F82617034}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{830D5835-7CE0-4164-8136-959F82617034}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{830D5835-7CE0-4164-8136-959F82617034}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{830D5835-7CE0-4164-8136-959F82617034}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
