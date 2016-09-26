@@ -71,6 +71,8 @@ namespace TestHarness
                     /* De-queue Test Request */
                     string TestRequest = DequeueTestRequest();
 
+                    Console.WriteLine("\n====START TEST REQUEST ({0})====", TestRequest);
+
                     /* Create Application Domain 
                      * The name of application domain is of format AppDomain followed by current timestamp with milliseconds
                      * AppDomain - YYMMDD - HHMMSS - FFF
@@ -104,15 +106,17 @@ namespace TestHarness
                         continue;
                     }
 
-                    AppDMgr.DisplayAssemblies(ChildDomain);
+                    /* Display assemblies loaded in child appdomain */
+                    //AppDMgr.DisplayAssemblies(ChildDomain);
 
                     Console.WriteLine("Unloading Child AppDomain ({0})", ChildDomain.FriendlyName);
                     AppDomain.Unload(ChildDomain);
-
+                    Console.WriteLine("====END TEST REQUEST ({0})====", TestRequest);
 
                 } while (TestQueue.Count != 0);
 
-                DisplayAssemblies(AppDomain.CurrentDomain);
+                /* Display assemblies loaded in main appdomain */
+                //DisplayAssemblies(AppDomain.CurrentDomain);
             }
             catch (Exception Ex)
             {

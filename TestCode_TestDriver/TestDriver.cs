@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace TestDrivers 
 {
@@ -8,10 +9,12 @@ namespace TestDrivers
     public class TestDriver : ITest
     {
         TestCode demoTestCode;
+        StringBuilder ResultLog;
 
         public TestDriver()
         {
             demoTestCode = new TestCode();
+            ResultLog = new StringBuilder();
         }
 
         public static ITest create()
@@ -21,27 +24,71 @@ namespace TestDrivers
 
         public bool test()
         {
+            bool bTestResult = true;
+
+            ResultLog.AppendLine("==================T.E.S.T  R.E.S.U.L.T.===================");
+
             // Call Test Function 1
-            demoTestCode.Display("Test 1");
-            
-            // Call Test Function 2
-            if (false == demoTestCode.IsNonZero(5))
+            demoTestCode.Display("Simulating Tests");
+            ResultLog.AppendLine("demoTestCode.Display...PASS.");
+
+            // Call Test Function 2 ...Positive Test
+            if (false == demoTestCode.Simulate_Pass_Test())
             {
-                // return false if a test fails
-                return false;
+                ResultLog.AppendLine("demoTestCode.Simulate_Pass_Test()...FAIL.");
+                bTestResult = false;
+            }
+            else
+            {
+                ResultLog.AppendLine("demoTestCode.Simulate_Pass_Test()...PASS.");
             }
 
-            //
-            // Call additional test functions
-            //
-            
-            // Return true if all tests pass.
-            return true;
+            // Call Test Function 2 ...Negative Test
+            if (false == demoTestCode.Simulate_Fail_Test())
+            {
+                ResultLog.AppendLine("demoTestCode.Simulate_Fail_Test()...FAIL.");
+                bTestResult = false;
+            }
+            else
+            {
+                ResultLog.AppendLine("demoTestCode.Simulate_Fail_Test()...PASS.");
+            }
+
+            // Call Test Function 3 ...Handled Exception
+            if (false == demoTestCode.Simulate_Handled_Exception())
+            {
+                ResultLog.AppendLine("demoTestCode.Simulate_Handled_Exception()...FAIL.");
+                bTestResult = false;
+            }
+            else
+            {
+                ResultLog.AppendLine("demoTestCode.Simulate_Handled_Exception()...PASS.");
+            }
+
+            // Call Test Function 4 ...UnHandled Exception
+            //if (false == demoTestCode.Simulate_UnHandled_Exception())
+            //{
+            //    ResultLog.AppendLine("demoTestCode.Simulate_UnHandled_Exception()...FAIL.");
+            //    bTestResult = false;
+            //}
+            //else
+            //{
+            //    ResultLog.AppendLine("demoTestCode.Simulate_UnHandled_Exception()...PASS.");
+            //}
+
+            ResultLog.AppendLine("==========================================================");
+
+            return bTestResult;
+        }
+
+        public string getLog()
+        {
+            return ResultLog.ToString();
         }
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Local test");
+            Console.WriteLine("Local test:\n");
 
             ITest test = TestDriver.create();
 
@@ -53,6 +100,8 @@ namespace TestDrivers
             {
                 Console.WriteLine("Test failed");
             }
+
+            Console.WriteLine("{0}", test.getLog());
         }
     }
 }

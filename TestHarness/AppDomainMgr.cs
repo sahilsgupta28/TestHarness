@@ -47,8 +47,7 @@ namespace TestHarness
             {
                 bool bRet;
 
-                Console.WriteLine("\nProcessing Test Request ({0})", sTestRequest);
-                Console.WriteLine("Current AppDomain : {0}", AppDomain.CurrentDomain.FriendlyName);
+                //Console.WriteLine("\n>>>>Processing Test Request (AD:{0})<<<<", AppDomain.CurrentDomain.FriendlyName);
 
                 /* Parse Test Request to extract data */
                 XmlParser Parser = new XmlParser();
@@ -66,7 +65,7 @@ namespace TestHarness
                 TestDrivers = load.LoadAssemblies(RepositoryPath, Parser.TestCase);
                 if (null == TestDrivers)
                 {
-                    Console.WriteLine(" load.LoadAssemblies({0})...FAILED", sTestRequest);
+                    Console.WriteLine("load.LoadAssemblies({0})...FAILED", sTestRequest);
                     return false;
                 }
 
@@ -74,6 +73,8 @@ namespace TestHarness
 
                 /* Execute Test */
                 ExecuteTest();
+
+                
 
             }
             catch (Exception Ex)
@@ -92,27 +93,30 @@ namespace TestHarness
                     return;
                 }
 
-                Console.WriteLine("\nExecuting Tests...");
-                Console.WriteLine("Current Domain : {0}", AppDomain.CurrentDomain.FriendlyName);
+                Console.WriteLine("\n>>>>Executing Tests (AD:{0})<<<<", AppDomain.CurrentDomain.FriendlyName);
 
                 foreach (TestData td in TestDrivers)
                 {
-                    Console.WriteLine("Testing {0}", td.Name);
-
+                    Console.WriteLine("Testing ({0})", td.Name);
+                    Console.WriteLine("--------------------------");
                     if (td.TestDriver.test() == true)
                     {
-                        Console.WriteLine("Test Passed\n");
+                        Console.WriteLine("--------------------------");
+                        Console.WriteLine("#### Test Status : PASS ####\n");
                     }
                     else
                     {
-                        Console.WriteLine("Test Failed\n");
+                        Console.WriteLine("--------------------------");
+                        Console.WriteLine("#### Test Status : FAIL ####\n");
                     }
+                    Console.WriteLine("{0}", td.TestDriver.getLog());
                 }
             }
             catch (Exception Ex)
             {
                 Console.WriteLine("Exception : {0}", Ex.Message);
             }
+           
         }
 
         public void DisplayTestDrivers()
