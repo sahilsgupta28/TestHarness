@@ -17,7 +17,7 @@ using TestInterface;
 
 namespace TestHarness
 {
-    class Loader
+    class Loader : MarshalByRefObject
     {
         public struct TestData
         {
@@ -34,6 +34,8 @@ namespace TestHarness
             try
             {
                 Console.WriteLine("\nLoading Assemblies...");
+                Console.WriteLine("Current Domain : {0}", AppDomain.CurrentDomain.FriendlyName);
+
                 foreach (var test in TestCase)
                 {
                     bool bRet;
@@ -49,13 +51,19 @@ namespace TestHarness
                     Console.WriteLine("Found assembly: {0}", filepath);
 
                     Assembly assem = Assembly.LoadFrom(filepath);
+                    if (assem == null)
+                    {
+                        Console.WriteLine("Could not load assembly ({0})", filepath);
+                        continue;
+                    }
+
                     Type[] types = assem.GetExportedTypes();
 
                     foreach (Type t in types)
                     {
                         if (t.IsClass && typeof(ITest).IsAssignableFrom(t))  // does this type derive from ITest ?
                         {
-                            Console.WriteLine("Loading assembly: {0}", t.Name);
+                            Console.WriteLine("Loading Class: {0}", t.FullName);
                             ITest testdriver = (ITest)Activator.CreateInstance(t);    // create instance of test driver
 
                             //save type name and reference to created type on managed heap
@@ -93,6 +101,31 @@ namespace TestHarness
             return true;
         }
 
+        public void ExecuteTest()
+        {
+            if (TestDrivers.Count == 0)
+            {
+                return;
+            }
+
+            Console.WriteLine("\nExecuting Tests...");
+            Console.WriteLine("\nCurrent Domain : {0}", AppDomain.CurrentDomain.FriendlyName);
+
+            foreach (TestData td in TestDrivers)
+            {
+                Console.WriteLine("Testing {0}", td.Name);
+
+                if (td.TestDriver.test() == true)
+                {
+                    Console.WriteLine("Test Passed\n");
+                }
+                else
+                {
+                    Console.WriteLine("Test Failed\n");
+                }
+            }
+        }
+
         public void Display()
         {
             Console.WriteLine("\nAssemblies Loaded:");
@@ -100,6 +133,15 @@ namespace TestHarness
             {
                 Console.WriteLine("{0}", TestData.Name);
             }
+        }
+
+        public void DisplayAssemblies(AppDomain Domain)
+        {
+            Console.WriteLine("\nListing Assemblies in Domain ({0})", Domain.FriendlyName);
+            Assembly[] loadedAssemblies = Domain.GetAssemblies();
+
+            foreach (Assembly a in loadedAssemblies)
+                Console.WriteLine("Assembly -> Name: ({0}) Version: ({1})", a.GetName().Name, a.GetName().Version);
         }
     }
 }

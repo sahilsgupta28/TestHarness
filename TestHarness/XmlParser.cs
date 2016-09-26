@@ -16,6 +16,7 @@ using System.Collections.Generic;
 
 namespace TestHarness
 {
+    [Serializable]
     public class TestCaseData
     {
         public int Version { get; set; }
@@ -40,7 +41,7 @@ namespace TestHarness
         }
     }
 
-    public class XmlParser
+    public class XmlParser : MarshalByRefObject
     {
         private XDocument xDoc;
         public List<TestCaseData> TestCase;
@@ -56,7 +57,8 @@ namespace TestHarness
             FileStream XML = null;
             try
             {
-                Console.WriteLine("Parsing Test Request File ({0})", sTestRequest);
+                Console.WriteLine("\nParsing Test Request File ({0})", sTestRequest);
+                Console.WriteLine("Current Domain : {0}", AppDomain.CurrentDomain.FriendlyName);
 
                 XML = new FileStream(sTestRequest, System.IO.FileMode.Open);
                 xDoc = XDocument.Load(XML);
