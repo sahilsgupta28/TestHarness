@@ -23,12 +23,12 @@ namespace TestHarness
         {
             try
             {
-                TestExec testexe;
-
-                /*  Validate input */
+                /*  Validate input 
+                 *  We Expect Repository Path as first input followed by one or more test requests
+                 */
                 if (args.Length < 2)
                 {
-                    Console.WriteLine("Enter Repository Path and Test Request Path");
+                    Console.WriteLine("Enter Repository Path and one or more Test Request Path");
                     return;
                 }
 
@@ -43,20 +43,27 @@ namespace TestHarness
                 /* Instantiate new Test Executive to process Test Requests 
                  * 
                  * @todo
-                 * Ideally, we would want to create a thread and start processing test requests here
-                 * The thread waits on queue and processes the test request as soon at it is enqueued.
+                 * Ideally, we would want to create a thread to processing test requests here
+                 * This thread waits on a blocking queue and processes a test request as soon as it is enqueued.
                  */
-                testexe = new TestExec(args[0]);
+                TestExec testexe = new TestExec(args[0]);
 
                 /* Enqueue all test requests */
                 int ReqCnt = 1;
                 do
                 {
+                    /* @todo 
+                     * We would want to continue accepting new test requests here
+                     */
+
+                    /* Enqueue test request */
                     testexe.EnqueueTestRequest(args[ReqCnt]);
+
                 } while (++ReqCnt != args.Length);
 
                 /* Process all queued test requests */
                 testexe.ProcessTestRequests();
+
             }
             catch(Exception Ex)
             {

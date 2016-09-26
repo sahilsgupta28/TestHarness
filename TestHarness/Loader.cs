@@ -17,22 +17,19 @@ using TestInterface;
 
 namespace TestHarness
 {
-    class Loader : MarshalByRefObject
+    class Loader
     {
-        public struct TestData
+        /**********************************************************************
+                                 P U B L I C   M E T H O D S
+         **********************************************************************/
+        public List<TestData> LoadAssemblies(string RepositoryPath, List<TestCaseData> TestCase)
         {
-            public string Name;
-            public ITest TestDriver;
-        }
+            List<TestData> TestDrivers = null;
 
-        public List<TestData> TestDrivers = new List<TestData>();
-
-        /******************************** Member Functions **********************************/
-
-        public bool LoadAssemblies(string RepositoryPath, List<TestCaseData> TestCase)
-        {
             try
             {
+                TestDrivers = new List<TestData>();
+
                 Console.WriteLine("\nLoading Assemblies...");
                 Console.WriteLine("Current Domain : {0}", AppDomain.CurrentDomain.FriendlyName);
 
@@ -40,6 +37,8 @@ namespace TestHarness
                 {
                     bool bRet;
                     string filepath;
+
+                    Console.WriteLine("\nAttempting to Load assembly ({0})", test.TestDriver);
 
                     bRet = GetFilePath(RepositoryPath, test.TestDriver, out filepath);
                     if (false == bRet)
@@ -61,14 +60,16 @@ namespace TestHarness
 
                     foreach (Type t in types)
                     {
-                        if (t.IsClass && typeof(ITest).IsAssignableFrom(t))  // does this type derive from ITest ?
+                        /* Does this type derive from ITest ? */
+                        if (t.IsClass && typeof(ITest).IsAssignableFrom(t))
                         {
-                            Console.WriteLine("Loading Class: {0}", t.FullName);
-                            ITest testdriver = (ITest)Activator.CreateInstance(t);    // create instance of test driver
+                            /* Create instance of test driver */
+                            Console.WriteLine("Instantiating Interface: ({0})", t);
+                            ITest testdriver = (ITest)Activator.CreateInstance(t);
 
-                            //save type name and reference to created type on managed heap
+                            /* Save type name and reference to created type on managed heap */
                             TestData testdata = new TestData();
-                            testdata.Name = t.Name;
+                            testdata.Name = t.FullName;
                             testdata.TestDriver = testdriver;
                             TestDrivers.Add(testdata);
                         }
@@ -78,10 +79,10 @@ namespace TestHarness
             catch (Exception Ex)
             {
                 Console.Write("Exception : {0}", Ex.Message);
-                return false;
+                return TestDrivers;
             }
 
-            return (TestDrivers.Count > 0);   // if we have items in list then Load succeeded
+            return TestDrivers;
         }
 
         private bool GetFilePath(string repo, string filename, out string filepath)
@@ -91,57 +92,14 @@ namespace TestHarness
 
             if (file.Length == 0)
             {
-                Console.WriteLine("File ({0}) not found.", filename);
+                //Console.WriteLine("File ({0}) not found.", filename);
                 filepath = null;
                 return false;
             }
 
-            Console.WriteLine("File ({0}) found.", file[0].FullName);
+            //Console.WriteLine("File ({0}) found.", file[0].FullName);
             filepath = file[0].FullName;
             return true;
-        }
-
-        public void ExecuteTest()
-        {
-            if (TestDrivers.Count == 0)
-            {
-                return;
-            }
-
-            Console.WriteLine("\nExecuting Tests...");
-            Console.WriteLine("\nCurrent Domain : {0}", AppDomain.CurrentDomain.FriendlyName);
-
-            foreach (TestData td in TestDrivers)
-            {
-                Console.WriteLine("Testing {0}", td.Name);
-
-                if (td.TestDriver.test() == true)
-                {
-                    Console.WriteLine("Test Passed\n");
-                }
-                else
-                {
-                    Console.WriteLine("Test Failed\n");
-                }
-            }
-        }
-
-        public void Display()
-        {
-            Console.WriteLine("\nAssemblies Loaded:");
-            foreach (var TestData in TestDrivers)
-            {
-                Console.WriteLine("{0}", TestData.Name);
-            }
-        }
-
-        public void DisplayAssemblies(AppDomain Domain)
-        {
-            Console.WriteLine("\nListing Assemblies in Domain ({0})", Domain.FriendlyName);
-            Assembly[] loadedAssemblies = Domain.GetAssemblies();
-
-            foreach (Assembly a in loadedAssemblies)
-                Console.WriteLine("Assembly -> Name: ({0}) Version: ({1})", a.GetName().Name, a.GetName().Version);
         }
     }
 }

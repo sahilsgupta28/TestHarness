@@ -16,15 +16,23 @@ using System.Collections.Generic;
 
 namespace TestHarness
 {
-    [Serializable]
     public class TestCaseData
     {
+
+        /**********************************************************************
+                         M E M B E R S
+        **********************************************************************/
+
         public int Version { get; set; }
         public string TestName { get; set; }
         public string Author { get; set; }
         public DateTime TimeStamp { get; set; }
         public string TestDriver { get; set; }
         public List<string> TestCode { get; set; }
+
+        /**********************************************************************
+                             P U B L I C   M E T H O D S
+        **********************************************************************/
 
         public void Display()
         {
@@ -33,6 +41,7 @@ namespace TestHarness
             Console.WriteLine("{0,12} : {1}", "TimeStamp", TimeStamp);
             Console.WriteLine("{0,12} : {1}", "TestName", TestName);
             Console.WriteLine("{0,12} : {1}", "TestDriver", TestDriver);
+
             foreach (string Library  in TestCode)
             {
                 Console.WriteLine("{0,12} : {1}", "Library", Library);
@@ -41,10 +50,18 @@ namespace TestHarness
         }
     }
 
-    public class XmlParser : MarshalByRefObject
+    public class XmlParser
     {
+        /**********************************************************************
+                         M E M B E R S
+         **********************************************************************/
+        
         private XDocument xDoc;
         public List<TestCaseData> TestCase;
+
+        /**********************************************************************
+                     P U B L I C   M E T H O D S
+        **********************************************************************/
 
         public XmlParser()
         {
@@ -107,8 +124,8 @@ namespace TestHarness
                 {
                     XML.Close();
                 }
-                
             }
+
             return true;
         }
 
