@@ -27,6 +27,7 @@ namespace TestHarness
         /**********************************************************************
                                  M E M B E R S
          **********************************************************************/
+        FileMgr Database;
 
         public List<TestData> TestDrivers;
 
@@ -39,6 +40,7 @@ namespace TestHarness
         public AppDomainMgr(string path)
         {
             RepositoryPath = path;
+            Database = new FileMgr(path + "\\Log.txt");
         }
 
         public bool ProcessTestRequest(string sTestRequest)
@@ -97,9 +99,12 @@ namespace TestHarness
 
                 foreach (TestData td in TestDrivers)
                 {
+                    bool TestStatus;
+
                     Console.WriteLine("Testing ({0})", td.Name);
                     Console.WriteLine("--------------------------");
-                    if (td.TestDriver.test() == true)
+                    TestStatus = td.TestDriver.test();
+                    if (TestStatus == true)
                     {
                         Console.WriteLine("--------------------------");
                         Console.WriteLine("#### Test Status : PASS ####\n");
@@ -109,7 +114,10 @@ namespace TestHarness
                         Console.WriteLine("--------------------------");
                         Console.WriteLine("#### Test Status : FAIL ####\n");
                     }
+
                     Console.WriteLine("{0}", td.TestDriver.getLog());
+
+                    Database.WriteLog(td.Name, td.TestDriver.getLog(), TestStatus?"PASS":"FAIL");
                 }
             }
             catch (Exception Ex)

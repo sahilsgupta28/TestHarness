@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppDomainMgr.cs" />
+    <Compile Include="FileMgr.cs" />
     <Compile Include="Loader.cs" />
     <Compile Include="TestExec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
