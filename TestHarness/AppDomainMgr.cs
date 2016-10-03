@@ -18,7 +18,7 @@ namespace TestHarness
 
     public struct TestData
     {
-        public string Name;
+        public string DriverName;
         public ITest TestDriver;
     }
 
@@ -101,7 +101,7 @@ namespace TestHarness
                 {
                     bool TestStatus;
 
-                    Console.WriteLine("Testing ({0})", td.Name);
+                    Console.WriteLine("Testing ({0})", td.DriverName);
                     Console.WriteLine("--------------------------");
                     TestStatus = td.TestDriver.test();
                     if (TestStatus == true)
@@ -117,7 +117,7 @@ namespace TestHarness
 
                     Console.WriteLine("{0}", td.TestDriver.getLog());
 
-                    Database.WriteLog(td.Name, td.TestDriver.getLog(), TestStatus?"PASS":"FAIL");
+                    Database.WriteLog(td.DriverName, td.TestDriver.getLog(), TestStatus?"PASS":"FAIL");
                 }
             }
             catch (Exception Ex)
@@ -132,7 +132,7 @@ namespace TestHarness
             Console.WriteLine("\nAssemblies Loaded:");
             foreach (var TestData in TestDrivers)
             {
-                Console.WriteLine("iTest Interface Name : {0}", TestData.Name);
+                Console.WriteLine("iTest Interface Name : {0}", TestData.DriverName);
             }
         }
 
