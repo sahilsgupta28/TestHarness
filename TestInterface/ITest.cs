@@ -9,5 +9,6 @@ namespace TestInterface
     public interface ITest
     {
         bool test();
+        string getLog();
     }
 }

@@ -36,15 +36,15 @@ namespace TestHarness
 
         public void Display()
         {
-            Console.WriteLine("{0,12} : {1}", "Version", Version);
-            Console.WriteLine("{0,12} : {1}", "Author", Author);
-            Console.WriteLine("{0,12} : {1}", "TimeStamp", TimeStamp);
-            Console.WriteLine("{0,12} : {1}", "TestName", TestName);
-            Console.WriteLine("{0,12} : {1}", "TestDriver", TestDriver);
+            Console.WriteLine("  {0,-12} : {1}", "Version", Version);
+            Console.WriteLine("  {0,-12} : {1}", "Author", Author);
+            Console.WriteLine("  {0,-12} : {1}", "TimeStamp", TimeStamp);
+            Console.WriteLine("  {0,-12} : {1}", "TestName", TestName);
+            Console.WriteLine("  {0,-12} : {1}", "TestDriver", TestDriver);
 
             foreach (string Library  in TestCode)
             {
-                Console.WriteLine("{0,12} : {1}", "Library", Library);
+                Console.WriteLine("  {0,-12} : {1}", "Library", Library);
             }
             Console.WriteLine("");
         }
@@ -74,8 +74,7 @@ namespace TestHarness
             FileStream XML = null;
             try
             {
-                Console.WriteLine("\nParsing Test Request File ({0})", sTestRequest);
-                Console.WriteLine("Current Domain : {0}", AppDomain.CurrentDomain.FriendlyName);
+                Console.WriteLine("\n>>>>Parsing Test Request File (AD:{0})<<<<", AppDomain.CurrentDomain.FriendlyName);
 
                 XML = new FileStream(sTestRequest, System.IO.FileMode.Open);
                 xDoc = XDocument.Load(XML);

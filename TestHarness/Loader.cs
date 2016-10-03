@@ -30,8 +30,7 @@ namespace TestHarness
             {
                 TestDrivers = new List<TestData>();
 
-                Console.WriteLine("\nLoading Assemblies...");
-                Console.WriteLine("Current Domain : {0}", AppDomain.CurrentDomain.FriendlyName);
+                Console.WriteLine("\n>>>>Loading Assemblies (AD:{0})<<<<", AppDomain.CurrentDomain.FriendlyName);
 
                 foreach (var test in TestCase)
                 {
