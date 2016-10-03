@@ -26,8 +26,6 @@ namespace TestDrivers
         {
             bool bTestResult = true;
 
-            ResultLog.AppendLine("==================T.E.S.T  R.E.S.U.L.T.===================");
-
             // Call Test Function 1
             demoTestCode.Display("Simulating Tests");
             ResultLog.AppendLine("demoTestCode.Display...PASS.");
@@ -75,8 +73,6 @@ namespace TestDrivers
             //{
             //    ResultLog.AppendLine("demoTestCode.Simulate_UnHandled_Exception()...PASS.");
             //}
-
-            ResultLog.AppendLine("==========================================================");
 
             return bTestResult;
         }

@@ -68,7 +68,7 @@ namespace TestHarness
 
                             /* Save type name and reference to created type on managed heap */
                             TestData testdata = new TestData();
-                            testdata.Name = t.FullName;
+                            testdata.DriverName = t.FullName;
                             testdata.TestDriver = testdriver;
                             TestDrivers.Add(testdata);
                         }
