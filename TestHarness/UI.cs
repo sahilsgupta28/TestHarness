@@ -4,7 +4,10 @@
  * Entry point for Test Harness
  * 
  * Usage
- *      TestHarness.exe repository_path testrequest1_path [(...)]
+ *      TestHarness.exe -repo repository_path -test testrequest1_path [(...)]
+ *      TestHarness.exe -repo repository_path -query testrequest1_path
+ *      TestHarness.exe -repo repository_path -querySummary
+ *      TestHarness.exe -repo repository_path -queryall
  *      
  * FileName     : TestExec.cs
  * Author       : Sahil Gupta
@@ -23,6 +26,8 @@ namespace TestHarness
         {
             try
             {
+                TestExec testexe;
+
                 /*  Validate input 
                  *  We Expect Repository Path as first input followed by one or more test requests
                  */
@@ -32,38 +37,63 @@ namespace TestHarness
                     return;
                 }
 
-                /* Check if Repository is valid */
-                if (!Directory.Exists(args[0]))
+                if ("-repo" == args[0])
                 {
-                    Console.WriteLine("Invalid Path {0}", args[0]);
+                    /* Check if Repository is valid */
+                    if (!Directory.Exists(args[1]))
+                    {
+                        Console.WriteLine("Invalid Path {0}", args[1]);
+                        return;
+                    }
+                    Console.WriteLine("Repository Path : {0}\n", args[1]);
+
+                    /* Instantiate new Test Executive to process Test Requests */
+                    testexe = new TestExec(args[1]);
+                }
+                else
+                {
+                    Console.WriteLine("Must have Repository Path");
                     return;
                 }
-                Console.WriteLine("Repository Path : {0}\n", args[0]);
 
-                /* Instantiate new Test Executive to process Test Requests 
-                 * 
-                 * @todo
-                 * Ideally, we would want to create a thread to processing test requests here
-                 * This thread waits on a blocking queue and processes a test request as soon as it is enqueued.
+                /** @todo 
+                 *  Ideally, we would want to create a thread to processing test requests here
+                 *  This thread waits on a blocking queue and processes a test request as soon as it is enqueued.
                  */
-                TestExec testexe = new TestExec(args[0]);
 
-                /* Enqueue all test requests */
-                int ReqCnt = 1;
-                do
+                if ("-test" == args[2])
                 {
-                    /* @todo 
-                     * We would want to continue accepting new test requests here
-                     */
+                    /* Enqueue all test requests */
+                    int ReqCnt = 3;
+                    do
+                    {
+                        /* @todo 
+                         * We would want to continue accepting new test requests here
+                         */
 
-                    /* Enqueue test request */
-                    testexe.EnqueueTestRequest(args[ReqCnt]);
+                        /* Enqueue test request */
+                        testexe.EnqueueTestRequest(args[ReqCnt]);
 
-                } while (++ReqCnt != args.Length);
+                    } while (++ReqCnt != args.Length);
 
-                /* Process all queued test requests */
-                testexe.ProcessTestRequests();
+                    /* Process all queued test requests */
+                    testexe.ProcessTestRequests();
+                }
 
+                if ("-query" == args[2])
+                {
+                    testexe.ProcessQuery(args[3]);
+                }
+
+                if ("-querySummary" == args[2])
+                {
+                    testexe.ProcessQuerySummary();
+                }
+
+                if ("-queryall" == args[2])
+                {
+                    testexe.ProcessQueryAll();
+                }
             }
             catch(Exception Ex)
             {

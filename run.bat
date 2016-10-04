@@ -1,1 +1,13 @@
-TestHarness\bin\Release\TestHarness .\Repository .\TestRequest\TestRequest.xml
+TestHarness\bin\Release\TestHarness -repo .\Repository -test .\TestRequest\TestRequest.xml
+pause
+cls
+
+TestHarness\bin\Release\TestHarness -repo .\Repository -query .\TestRequest\TestRequest.xml
+pause
+cls
+
+TestHarness\bin\Release\TestHarness -repo .\Repository  -querySummary
+pause
+cls
+
+TestHarness\bin\Release\TestHarness -repo .\Repository  -queryall

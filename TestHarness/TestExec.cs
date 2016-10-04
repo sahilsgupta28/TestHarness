@@ -98,6 +98,10 @@ namespace TestHarness
                         continue;
                     }
 
+                    /**
+                     * @todo We may want to create threads and process test request in that
+                     */
+
                     /* Pass test request to app domain */
                     bRet = AppDMgr.ProcessTestRequest(TestRequest);
                     if (false == bRet)
@@ -124,7 +128,39 @@ namespace TestHarness
             }
         }
 
-        public void DisplayAssemblies(AppDomain Domain)
+        public void ProcessQuery(string TestRequest)
+        {
+            bool bRet;
+            FileMgr Database = new FileMgr(RepositoryPath + "\\Log.txt");
+
+            XmlParser Parser = new XmlParser();
+            bRet = Parser.ParseTestRequest(TestRequest);
+            if (false == bRet)
+            {
+                Console.WriteLine("Parser.ParseTestRequest({0})...FAILED", TestRequest);
+                return;
+            }
+
+            foreach (TestCaseData test in Parser.TestCase)
+            {
+                Console.WriteLine("<<<{0}>>>", test.TestDriver);
+                Console.WriteLine("{0}", Database.GetDriverTestResult(test.TestDriver));
+            }
+        }
+
+        public void ProcessQuerySummary()
+        {
+            FileMgr Database = new FileMgr(RepositoryPath + "\\Log.txt");
+            Database.DisplayTestSummary();
+        }
+
+        public void ProcessQueryAll()
+        {
+            FileMgr Database = new FileMgr(RepositoryPath + "\\Log.txt");
+            Database.DisplayLog();
+        }
+
+        void DisplayAssemblies(AppDomain Domain)
         {
             Console.WriteLine("\nListing Assemblies in Domain ({0})", Domain.FriendlyName);
             Assembly[] loadedAssemblies = Domain.GetAssemblies();

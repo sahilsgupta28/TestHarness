@@ -74,10 +74,7 @@ namespace TestHarness
                 DisplayTestDrivers();
 
                 /* Execute Test */
-                ExecuteTest();
-
-                
-
+                ExecuteTest(); 
             }
             catch (Exception Ex)
             {
