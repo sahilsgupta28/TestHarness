@@ -9,13 +9,15 @@
  */
 
 using System;
+using System.Runtime.Remoting;
 using System.Collections.Generic;
 
 namespace TestHarness
 {
-    using System.IO;
-    using System.Runtime.Remoting;
     using TestInterface;
+    using XMLParser;
+    using AssemblyLoader;
+    using FileManager;
 
     class TestInfo
     {

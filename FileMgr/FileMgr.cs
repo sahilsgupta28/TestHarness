@@ -12,9 +12,9 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace TestHarness
+namespace FileManager
 {
-    class FileMgr
+    public class FileMgr
     {
         string filepath;
 
@@ -140,7 +140,7 @@ namespace TestHarness
             }
         }
 
-        static void FileMgrMain(string[] args)
+        static void Main(string[] args)
         {
             try
             {

@@ -14,7 +14,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
 
-namespace TestHarness
+namespace XMLParser
 {
     public class xmlTestInfo
     {
@@ -134,6 +134,23 @@ namespace TestHarness
             {
                 TestData.Display();
             }
+        }
+
+        static void Main(string[] args)
+        {
+            bool bRet;
+            string XmlPath = @"E:\Sahil\Syracuse\Study\CSE 681 - SMA\Project\Project 2\TestHarness\TestRequest\TestRequest.xml";
+
+            XmlParser Parser = new XmlParser();
+
+            bRet = Parser.ParseTestRequest(XmlPath);
+            if (false == bRet)
+            {
+                Console.WriteLine("Parser.ParseTestRequest({0})...FAILED", XmlPath);
+                return;
+            }
+
+            Parser.DisplayTestRequest();
         }
 
     }

@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Text;
 
-namespace TestDrivers 
+namespace SampleProject
 {
     using TestInterface;
-    using TestCode;
 
     public class TestDriver : ITest
     {
-        TestCode demoTestCode;
+        SampleCode demoTestCode;
         StringBuilder ResultLog;
 
         public TestDriver()
         {
-            demoTestCode = new TestCode();
+            demoTestCode = new SampleCode();
             ResultLog = new StringBuilder();
         }
 
@@ -90,13 +89,14 @@ namespace TestDrivers
 
             if (test.test() == true)
             {
-                Console.WriteLine("Test passed");
+                Console.WriteLine("\n>>>Test PASS<<<");
             }
             else
             {
-                Console.WriteLine("Test failed");
+                Console.WriteLine("\n>>>Test FAIL<<<");
             }
 
+            Console.WriteLine("\nTest Logs:");
             Console.WriteLine("{0}", test.getLog());
         }
     }

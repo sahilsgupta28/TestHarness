@@ -4,8 +4,8 @@
   <Version>1</Version>
   <Author>Sahil Gupta</Author>
   <Test Name ="Demo Test">
-    <TestDriver>TestCode_TestDriver.dll</TestDriver>
-    <Library>TestCode.dll</Library>
+    <TestDriver>SampleDriver.dll</TestDriver>
+    <Library>SampleProject.dll</Library>
   </Test>
   <Test Name ="Math Library">
     <TestDriver>Math_TestDriver.dll</TestDriver>

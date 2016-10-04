@@ -15,9 +15,9 @@ using System.Collections.Generic;
 
 using TestInterface;
 
-namespace TestHarness
+namespace AssemblyLoader
 {
-    class Loader
+    public class Loader
     {
         /**********************************************************************
                                 M E M B E R S
@@ -126,7 +126,7 @@ namespace TestHarness
                 Console.WriteLine("Assembly -> Name: ({0}) Version: ({1})", a.GetName().Name, a.GetName().Version);
         }
 
-        static void LoaderMain(string[] args)
+        static void Main(string[] args)
         {
             string path = @"E:\Sahil\Syracuse\Study\CSE 681 - SMA\Project\Project 2\TestHarness\Repository";
             Loader DemoLoader = new Loader(path);

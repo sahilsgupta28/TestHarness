@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace TestCode
+namespace SampleProject
 {
-    public class TestCode
+    public class SampleCode
     {
         public void Display(string msg)
         {
@@ -48,14 +48,15 @@ namespace TestCode
 
         static void Main(string[] args)
         {
-            TestCode tc = new TestCode();
+            SampleCode tc = new SampleCode();
 
             tc.Display("Simulating Tests");
             Console.WriteLine("tc.Simulate_Pass_Test() : {0}", tc.Simulate_Pass_Test() ? "TRUE" : "FALSE");
             Console.WriteLine("tc.Simulate_Fail_Test() : {0}", tc.Simulate_Fail_Test() ? "TRUE" : "FALSE");
             Console.WriteLine("tc.Simulate_Handled_Exception() : {0}", tc.Simulate_Handled_Exception() ? "TRUE" : "FALSE");
-            Console.WriteLine("tc.Simulate_UnHandled_Exception() : {0}", tc.Simulate_UnHandled_Exception() ? "TRUE" : "FALSE");
+            //Console.WriteLine("tc.Simulate_UnHandled_Exception() : {0}", tc.Simulate_UnHandled_Exception() ? "TRUE" : "FALSE");
 
         }
     }
 }
+

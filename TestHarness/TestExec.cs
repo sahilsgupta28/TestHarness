@@ -16,6 +16,9 @@ using System.Security.Policy;
 
 namespace TestHarness
 {
+    using XMLParser;
+    using FileManager;
+
     class TestExec
     {
         /**********************************************************************
@@ -78,10 +81,7 @@ namespace TestHarness
                      * The name of application domain is of format AppDomain followed by current timestamp with milliseconds
                      * AppDomain - YYMMDD - HHMMSS - FFF
                      */
-                    AppDomainSetup domaininfo = new AppDomainSetup();
-                    domaininfo.ApplicationBase = "file:///" + System.Environment.CurrentDirectory;
-                    Evidence adevidence = AppDomain.CurrentDomain.Evidence;
-                    AppDomain ChildDomain = AppDomain.CreateDomain("AppDomain-" + DateTime.Now.ToString("yyMMdd-HHmmss-fff"), adevidence, domaininfo);
+                    AppDomain ChildDomain = AppDomain.CreateDomain("AppDomain-" + DateTime.Now.ToString("yyMMdd-HHmmss-fff"));
 
                     Console.WriteLine("Created new application domain ({0})", ChildDomain.FriendlyName);
 
