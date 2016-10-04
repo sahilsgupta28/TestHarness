@@ -12,6 +12,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Security.Policy;
 
 namespace TestHarness
 {
@@ -77,7 +78,11 @@ namespace TestHarness
                      * The name of application domain is of format AppDomain followed by current timestamp with milliseconds
                      * AppDomain - YYMMDD - HHMMSS - FFF
                      */
-                    AppDomain ChildDomain = AppDomain.CreateDomain("AppDomain-" + DateTime.Now.ToString("yyMMdd-HHmmss-fff"));
+                    AppDomainSetup domaininfo = new AppDomainSetup();
+                    domaininfo.ApplicationBase = "file:///" + System.Environment.CurrentDirectory;
+                    Evidence adevidence = AppDomain.CurrentDomain.Evidence;
+                    AppDomain ChildDomain = AppDomain.CreateDomain("AppDomain-" + DateTime.Now.ToString("yyMMdd-HHmmss-fff"), adevidence, domaininfo);
+
                     Console.WriteLine("Created new application domain ({0})", ChildDomain.FriendlyName);
 
                     /* Instantiate AppDomainMgr to process individual test request */
@@ -120,7 +125,7 @@ namespace TestHarness
                 } while (TestQueue.Count != 0);
 
                 /* Display assemblies loaded in main appdomain */
-                //DisplayAssemblies(AppDomain.CurrentDomain);
+                //Loader.DisplayAssemblies(AppDomain.CurrentDomain);
             }
             catch (Exception Ex)
             {
@@ -141,7 +146,7 @@ namespace TestHarness
                 return;
             }
 
-            foreach (TestCaseData test in Parser.TestCase)
+            foreach (xmlTestInfo test in Parser.xmlTestInfoList)
             {
                 Console.WriteLine("<<<{0}>>>", test.TestDriver);
                 Console.WriteLine("{0}", Database.GetDriverTestResult(test.TestDriver));
@@ -158,15 +163,6 @@ namespace TestHarness
         {
             FileMgr Database = new FileMgr(RepositoryPath + "\\Log.txt");
             Database.DisplayLog();
-        }
-
-        void DisplayAssemblies(AppDomain Domain)
-        {
-            Console.WriteLine("\nListing Assemblies in Domain ({0})", Domain.FriendlyName);
-            Assembly[] loadedAssemblies = Domain.GetAssemblies();
-
-            foreach (Assembly a in loadedAssemblies)
-                Console.WriteLine("Assembly -> Name: ({0}) Version: ({1})", a.GetName().Name, a.GetName().Version);
         }
     }
 }

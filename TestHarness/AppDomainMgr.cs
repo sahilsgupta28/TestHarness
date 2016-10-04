@@ -9,17 +9,44 @@
  */
 
 using System;
-using System.Reflection;
 using System.Collections.Generic;
 
 namespace TestHarness
 {
+    using System.IO;
+    using System.Runtime.Remoting;
     using TestInterface;
 
-    public struct TestData
+    class TestInfo
     {
-        public string DriverName;
-        public ITest TestDriver;
+        public string Version;
+        public string Author;
+        public DateTime TimeStamp;
+        public string TestName;
+        public string TestDriverDLL;
+        public string TestDriverClass;
+        public List<string> TestCodeDLL;
+
+        public TestInfo()
+        {
+            Version = "1";
+        }
+
+        public void Display()
+        {
+            Console.WriteLine("  {0,-12} : {1}", "Version", Version);
+            Console.WriteLine("  {0,-12} : {1}", "Author", Author);
+            Console.WriteLine("  {0,-12} : {1}", "TimeStamp", TimeStamp);
+            Console.WriteLine("  {0,-12} : {1}", "TestName", TestName);
+            Console.WriteLine("  {0,-12} : {1}", "TestDriverDLL", TestDriverDLL);
+            Console.WriteLine("  {0,-12} : {1}", "TestDriverClass", TestDriverClass);
+
+            foreach (string DLL in TestCodeDLL)
+            {
+                Console.WriteLine("  {0,-12} : {1}", "TestCodeDLL", DLL);
+            }
+            Console.WriteLine("");
+        }
     }
 
     class AppDomainMgr : MarshalByRefObject
@@ -29,7 +56,7 @@ namespace TestHarness
          **********************************************************************/
         FileMgr Database;
 
-        public List<TestData> TestDrivers;
+        public List<TestInfo> TestInfoList = null;
 
         public string RepositoryPath { get; set; }
 
@@ -62,16 +89,23 @@ namespace TestHarness
 
                 Parser.DisplayTestRequest();
 
-                /* Load Assembly */
-                Loader load = new Loader();
-                TestDrivers = load.LoadAssemblies(RepositoryPath, Parser.TestCase);
-                if (null == TestDrivers)
+                /* Convert */
+                TestInfoList = GetTestInfoFromXmlTestInfo(Parser.xmlTestInfoList);
+
+                /* Invoke Loader */
+                Loader load = new Loader(RepositoryPath);
+                foreach (var TestInfo in TestInfoList)
                 {
-                    Console.WriteLine("load.LoadAssemblies({0})...FAILED", sTestRequest);
-                    return false;
+                    TestInfo.TestDriverClass = load.LoadAssemblyAndGetItestClass(TestInfo.TestDriverDLL);
+                    if (null == TestInfo.TestDriverClass)
+                    {
+                        Console.WriteLine("load.LoadAssemblyAndGetItestClass({0})...FAILED", TestInfo.TestDriverDLL);
+                        //return false;
+                    }
+
                 }
 
-                DisplayTestDrivers();
+                DisplayTestInfoList();
 
                 /* Execute Test */
                 ExecuteTest(); 
@@ -83,24 +117,71 @@ namespace TestHarness
             return true;
         }
 
+        private List<TestInfo> GetTestInfoFromXmlTestInfo(List<xmlTestInfo> xmlTestInfoList)
+        {
+            if(0 == xmlTestInfoList.Count)
+            {
+                return null;
+            }
+
+            List<TestInfo> TestInfo = new List<TestInfo>();
+
+            foreach (xmlTestInfo xmlInfo in xmlTestInfoList)
+            {
+                TestInfo newTestInfo = new TestInfo();
+                newTestInfo.Author = xmlInfo.Author;
+                newTestInfo.TimeStamp = xmlInfo.TimeStamp;
+                newTestInfo.TestName = xmlInfo.TestName;
+                newTestInfo.TestDriverDLL = xmlInfo.TestDriver;
+                //TestDriverClass;
+
+                newTestInfo.TestCodeDLL = new List<string>();
+                foreach (var DLL in xmlInfo.TestCode)
+                {
+                    newTestInfo.TestCodeDLL.Add(DLL);
+                }
+
+                TestInfo.Add(newTestInfo);
+            }
+
+            return TestInfo;
+        }
+
+
         public void ExecuteTest()
         {
             try
             {
-                if (TestDrivers.Count == 0)
+                if (0 == TestInfoList.Count)
                 {
                     return;
                 }
 
                 Console.WriteLine("\n>>>>Executing Tests (AD:{0})<<<<", AppDomain.CurrentDomain.FriendlyName);
 
-                foreach (TestData td in TestDrivers)
+                foreach (TestInfo Info in TestInfoList)
                 {
                     bool TestStatus;
 
-                    Console.WriteLine("Testing ({0})", td.DriverName);
+                    Console.WriteLine("Testing ({0})", Info.TestName);
                     Console.WriteLine("--------------------------");
-                    TestStatus = td.TestDriver.test();
+
+                    string TestDriverAssemblyPath;
+                    TestStatus = Loader.GetFilePath(RepositoryPath, Info.TestDriverDLL, out TestDriverAssemblyPath);
+                    if(false == TestStatus)
+                    {
+                        Console.WriteLine("Error: Loader.GetFilePath({0})...FAILED.", Info.TestDriverDLL);
+                        continue;
+                    }
+
+                    ITest TestDriverInstance = GetITestInstance(TestDriverAssemblyPath, Info.TestDriverClass);
+                    if(null == TestDriverInstance)
+                    {
+                        Console.WriteLine("Error:GetITestInstance({0})...FAILED.", Info.TestDriverClass);
+                        continue;
+                    }
+
+                    TestStatus = TestDriverInstance.test();
                     if (TestStatus == true)
                     {
                         Console.WriteLine("--------------------------");
@@ -112,35 +193,33 @@ namespace TestHarness
                         Console.WriteLine("#### Test Status : FAIL ####\n");
                     }
 
-                    Console.WriteLine("{0}", td.TestDriver.getLog());
+                    Console.WriteLine("{0}", TestDriverInstance.getLog());
 
-                    Database.WriteLog(td.DriverName, td.TestDriver.getLog(), TestStatus?"PASS":"FAIL");
+                    Database.WriteLog(Info.TestDriverClass, TestDriverInstance.getLog(), TestStatus ? "PASS" : "FAIL");
                 }
             }
             catch (Exception Ex)
             {
                 Console.WriteLine("Exception : {0}", Ex.Message);
             }
-           
+
         }
 
-        public void DisplayTestDrivers()
+        public static ITest GetITestInstance(string AssemblyPath, string ClassName)
+        {
+            ObjectHandle oh = Activator.CreateInstanceFrom(AssemblyPath, ClassName);
+            object ob = oh.Unwrap();
+
+            return (ITest)ob;
+        }
+
+        public void DisplayTestInfoList()
         {
             Console.WriteLine("\nAssemblies Loaded:");
-            foreach (var TestData in TestDrivers)
+            foreach (var Info in TestInfoList)
             {
-                Console.WriteLine("iTest Interface Name : {0}", TestData.DriverName);
+                Info.Display();
             }
         }
-
-        public void DisplayAssemblies(AppDomain Domain)
-        {
-            Console.WriteLine("\nListing Assemblies in Domain ({0})", Domain.FriendlyName);
-            Assembly[] loadedAssemblies = Domain.GetAssemblies();
-
-            foreach (Assembly a in loadedAssemblies)
-                Console.WriteLine("Assembly -> Name: ({0}) Version: ({1})", a.GetName().Name, a.GetName().Version);
-        }
-
     }
 }

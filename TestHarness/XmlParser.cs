@@ -16,7 +16,7 @@ using System.Collections.Generic;
 
 namespace TestHarness
 {
-    public class TestCaseData
+    public class xmlTestInfo
     {
 
         /**********************************************************************
@@ -57,7 +57,7 @@ namespace TestHarness
          **********************************************************************/
         
         private XDocument xDoc;
-        public List<TestCaseData> TestCase;
+        public List<xmlTestInfo> xmlTestInfoList;
 
         /**********************************************************************
                      P U B L I C   M E T H O D S
@@ -66,7 +66,7 @@ namespace TestHarness
         public XmlParser()
         {
             xDoc = new XDocument();
-            TestCase = new List<TestCaseData>();
+            xmlTestInfoList = new List<xmlTestInfo>();
         }
 
         public bool ParseTestRequest(string sTestRequest)
@@ -91,7 +91,7 @@ namespace TestHarness
                 int numTests = xtests.Count();
                 for (int i = 0; i < numTests; i++)
                 {
-                    TestCaseData TestData = new TestCaseData();
+                    xmlTestInfo TestData = new xmlTestInfo();
 
                     /* Fill in test case data */
                     TestData.Version = Int32.Parse(Version);
@@ -108,8 +108,8 @@ namespace TestHarness
                         TestData.TestCode.Add(library.Value);
                     }
 
-                    /* Add this test data to list of test cases */
-                    TestCase.Add(TestData);
+                    /* Add this test data to list of test info */
+                    xmlTestInfoList.Add(TestData);
                 }
 
             }
@@ -130,7 +130,7 @@ namespace TestHarness
 
         public void DisplayTestRequest()
         {
-            foreach (TestCaseData TestData in TestCase)
+            foreach (xmlTestInfo TestData in xmlTestInfoList)
             {
                 TestData.Display();
             }
