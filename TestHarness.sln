@@ -5,6 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestHarness", "TestHarness\TestHarness.csproj", "{5AFFFD69-C53C-47C2-8BDF-C91CE50330BF}"
 	ProjectSection(ProjectDependencies) = postProject
+		{683CE900-E980-4358-AEC5-BCACBCFFA3E7} = {683CE900-E980-4358-AEC5-BCACBCFFA3E7}
 		{930DC99F-C265-4C39-8796-A395BD149DCD} = {930DC99F-C265-4C39-8796-A395BD149DCD}
 	EndProjectSection
 EndProject
