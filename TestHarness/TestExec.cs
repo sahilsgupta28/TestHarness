@@ -8,11 +8,13 @@
  * Version      : 1.0
  */
 
+/* Define if you want to enable debug logs */
+//#define ENABLE_DEBUG_LOGS
+
 using System;
 using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
-using System.Security.Policy;
 
 namespace TestHarness
 {
@@ -49,7 +51,7 @@ namespace TestHarness
         public void EnqueueTestRequest(string TestRequestFile)
         {
             TestQueue.Enqueue(TestRequestFile);
-            Console.WriteLine("En-queued ({0})", TestRequestFile);
+            Console.WriteLine("REQUIREMENT 3 : En-queued ({0})", TestRequestFile);
         }
 
         public string DequeueTestRequest()
@@ -57,75 +59,43 @@ namespace TestHarness
             string TestRequestFile;
 
             TestRequestFile = TestQueue.Dequeue();
-            Console.WriteLine("De-queued ({0})", TestRequestFile);
+            Console.WriteLine("REQUIREMENT 3 : De-queued ({0})", TestRequestFile);
 
             return TestRequestFile;
         }
 
         public void ProcessTestRequests()
         {
-            bool bRet;
-
-            Console.WriteLine("\nCurrent AppDomain : {0}", AppDomain.CurrentDomain.FriendlyName);
-
             try
             {
+                AppDomainMgr AppDMgr = new AppDomainMgr(RepositoryPath);
+
                 do
                 {
-                    /* De-queue Test Request */
-                    string TestRequest = DequeueTestRequest();
-
-                    Console.WriteLine("\n====START TEST REQUEST ({0})====", TestRequest);
-
-                    /* Create Application Domain 
-                     * The name of application domain is of format AppDomain followed by current timestamp with milliseconds
-                     * AppDomain - YYMMDD - HHMMSS - FFF
-                     */
-                    AppDomain ChildDomain = AppDomain.CreateDomain("AppDomain-" + DateTime.Now.ToString("yyMMdd-HHmmss-fff"));
-
-                    Console.WriteLine("Created new application domain ({0})", ChildDomain.FriendlyName);
-
-                    /* Instantiate AppDomainMgr to process individual test request */
-                    Type tAppDMgr = typeof(AppDomainMgr);
-                    AppDomainMgr AppDMgr = (AppDomainMgr)ChildDomain.CreateInstanceAndUnwrap(
-                        Assembly.GetAssembly(tAppDMgr).FullName,
-                        tAppDMgr.ToString(),
-                        false,
-                        BindingFlags.Default,
-                        null,
-                        new object[] { RepositoryPath },
-                        null,
-                        null
-                        );
-                    if (null == AppDMgr)
-                    {
-                        Console.WriteLine("ChildDomain.CreateInstanceAndUnwrap(AppDomainMgr) for ({0})...FAILED.", TestRequest);
-                        continue;
-                    }
-
                     /**
                      * @todo We may want to create threads and process test request in that
                      */
 
+                    /* De-queue Test Request */
+                    string TestRequest = DequeueTestRequest();
+
+                    #if ENABLE_DEBUG_LOGS
+                    Console.WriteLine("\n====START TEST REQUEST ({0})====", TestRequest);
+                    #endif
+
                     /* Pass test request to app domain */
-                    bRet = AppDMgr.ProcessTestRequest(TestRequest);
+                    bool bRet = AppDMgr.ProcessTestRequest(TestRequest);
                     if (false == bRet)
                     {
-                        Console.WriteLine("{0}({1})...FAILED.", AppDMgr.GetType().FullName, TestRequest);
+                        Console.WriteLine("Error: {0}({1})...FAILED.", AppDMgr.GetType().FullName, TestRequest);
                         continue;
                     }
 
-                    /* Display assemblies loaded in child appdomain */
-                    //AppDMgr.DisplayAssemblies(ChildDomain);
-
-                    Console.WriteLine("Unloading Child AppDomain ({0})", ChildDomain.FriendlyName);
-                    AppDomain.Unload(ChildDomain);
-                    Console.WriteLine("====END TEST REQUEST ({0})====", TestRequest);
+                    #if ENABLE_DEBUG_LOGS
+                    Console.WriteLine("====END TEST REQUEST ({0})====\n", TestRequest);
+                    #endif
 
                 } while (TestQueue.Count != 0);
-
-                /* Display assemblies loaded in main appdomain */
-                //Loader.DisplayAssemblies(AppDomain.CurrentDomain);
             }
             catch (Exception Ex)
             {
@@ -133,33 +103,33 @@ namespace TestHarness
             }
         }
 
-        public void ProcessQuery(string TestRequest)
+        public void GetLogTestRequest(string TestRequest)
         {
             bool bRet;
             FileMgr Database = new FileMgr(RepositoryPath + "\\Log.txt");
 
             XmlParser Parser = new XmlParser();
-            bRet = Parser.ParseTestRequest(TestRequest);
+            bRet = Parser.ParseXmlFile(TestRequest);
             if (false == bRet)
             {
-                Console.WriteLine("Parser.ParseTestRequest({0})...FAILED", TestRequest);
+                Console.WriteLine("Error: Parser.ParseTestRequest({0})...FAILED", TestRequest);
                 return;
             }
 
-            foreach (xmlTestInfo test in Parser.xmlTestInfoList)
+            foreach (xmlTestInfo test in Parser._xmlTestInfoList)
             {
-                Console.WriteLine("<<<{0}>>>", test.TestDriver);
-                Console.WriteLine("{0}", Database.GetDriverTestResult(test.TestDriver));
+                Console.WriteLine("<<<{0}>>>", test._TestDriver);
+                Console.WriteLine("{0}", Database.GetDriverTestResult(test._TestDriver));
             }
         }
 
-        public void ProcessQuerySummary()
+        public void GetLogSummary()
         {
             FileMgr Database = new FileMgr(RepositoryPath + "\\Log.txt");
             Database.DisplayTestSummary();
         }
 
-        public void ProcessQueryAll()
+        public void GetLogFile()
         {
             FileMgr Database = new FileMgr(RepositoryPath + "\\Log.txt");
             Database.DisplayLog();

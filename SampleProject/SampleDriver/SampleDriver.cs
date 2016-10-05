@@ -5,7 +5,7 @@ namespace SampleProject
 {
     using TestInterface;
 
-    public class TestDriver : ITest
+    public class TestDriver : MarshalByRefObject, ITest
     {
         SampleCode demoTestCode;
         StringBuilder ResultLog;
@@ -63,15 +63,15 @@ namespace SampleProject
             }
 
             // Call Test Function 4 ...UnHandled Exception
-            //if (false == demoTestCode.Simulate_UnHandled_Exception())
-            //{
-            //    ResultLog.AppendLine("demoTestCode.Simulate_UnHandled_Exception()...FAIL.");
-            //    bTestResult = false;
-            //}
-            //else
-            //{
-            //    ResultLog.AppendLine("demoTestCode.Simulate_UnHandled_Exception()...PASS.");
-            //}
+            if (false == demoTestCode.Simulate_UnHandled_Exception())
+            {
+                ResultLog.AppendLine("demoTestCode.Simulate_UnHandled_Exception()...FAIL.");
+                bTestResult = false;
+            }
+            else
+            {
+                ResultLog.AppendLine("demoTestCode.Simulate_UnHandled_Exception()...PASS.");
+            }
 
             return bTestResult;
         }

@@ -1,8 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/**
+ * Interface
+ * Defines ITest Interface which ever test driver must implement
+ * 
+ * FileName     : ITest.cs
+ * Author       : Sahil Gupta
+ * Date         : 25 September 2016 
+ * Version      : 1.0
+ */
+
+using System;
 
 namespace TestInterface
 {

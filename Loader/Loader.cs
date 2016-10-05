@@ -13,11 +13,11 @@ using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
 
-using TestInterface;
-
 namespace AssemblyLoader
 {
-    public class Loader
+    using TestInterface;
+
+    public class Loader : MarshalByRefObject
     {
         /**********************************************************************
                                 M E M B E R S
@@ -26,7 +26,7 @@ namespace AssemblyLoader
         string _RepositoryPath;
 
         /**********************************************************************
-                                 P U B L I C   M E T H O D S
+                                P U B L I C   M E T H O D S
          **********************************************************************/
 
         public Loader(string path)
@@ -34,58 +34,74 @@ namespace AssemblyLoader
             _RepositoryPath = path;
         }
 
-        public string LoadAssemblyAndGetItestClass(string AssemblyName)
+        /**
+         * LoadAssembly
+         * Loads Assembly and reurns ITest Class name in that assembly 
+         */
+        public string LoadAssembly(string AssemblyName)
         {
             bool bRet;
             string AssemblyAbsPath;
 
-            Console.WriteLine("\nAttempting to Load assembly ({0})", AssemblyName);
-
-            bRet = GetFilePath(_RepositoryPath, AssemblyName, out AssemblyAbsPath);
-            if (false == bRet)
+            try
             {
-                Console.WriteLine("GetFilePath({0})...FAILED.", AssemblyName);
-                return null;
-            }
+                //Console.WriteLine("\nAttempting to Load assembly ({0})", AssemblyName);
 
-            Console.WriteLine("Found assembly: {0}", AssemblyAbsPath);
-
-            Assembly assemblyInstance = Assembly.LoadFrom(AssemblyAbsPath);
-            if (assemblyInstance == null)
-            {
-                Console.WriteLine("Could not load assembly ({0})", AssemblyAbsPath);
-                return null;
-            }
-
-            Type[] types = assemblyInstance.GetExportedTypes();
-
-            foreach (Type t in types)
-            {
-                /* Does this type derive from ITest ? */
-                if (t.IsClass && typeof(ITest).IsAssignableFrom(t))
+                /* Get Absolute File Path */
+                bRet = GetFilePath(_RepositoryPath, AssemblyName, out AssemblyAbsPath);
+                if (false == bRet)
                 {
-                    return t.FullName;
+                    Console.WriteLine("Error: GetFilePath({0})...FAILED.", AssemblyName);
+                    return null;
+                }
+
+                /* Load Assembly */
+                Assembly assemblyInstance = Assembly.LoadFrom(AssemblyAbsPath);
+                if (null == assemblyInstance)
+                {
+                    Console.WriteLine("Error: Assembly.LoadFrom({0})...FAILED.", AssemblyAbsPath);
+                    return null;
+                }
+
+                /* Iterate over all exported types to find the type that derives from ITest Interface */
+                Type[] types = assemblyInstance.GetExportedTypes();
+                foreach (Type t in types)
+                {
+                    /* Check if type derives from ITest Interface */
+                    if (t.IsClass && typeof(ITest).IsAssignableFrom(t))
+                    {
+                        return t.FullName;
+                    }
                 }
             }
+            catch (Exception Ex)
+            {
+                Console.WriteLine("Exception : {0}", Ex.Message);
+            }
+
             return null;
         }
 
-        public List<string> LoadAssemblyAndGetItestClass(List<string> Assemblies)
+        /**
+         * LoadMultipleAssemblies
+         * Loads a list of assemblies and returns list of corresponding ITest class name
+         */
+        public List<string> LoadMultipleAssemblies(List<string> Assemblies)
         {
             List<string> lsAssemblyClassName = null;
 
-            Console.WriteLine("\n>>>>Loading Assemblies (AD:{0})<<<<", AppDomain.CurrentDomain.FriendlyName);
+            //Console.WriteLine("\n>>>>Loading Assemblies (AD:{0})<<<<", AppDomain.CurrentDomain.FriendlyName);
 
             try
             {
                 lsAssemblyClassName = new List<string>();
                 foreach (var AssemblyName in Assemblies)
                 {
-                    string AssemblyClassName = LoadAssemblyAndGetItestClass(AssemblyName);
+                    string AssemblyClassName = LoadAssembly(AssemblyName);
                     if (null == AssemblyName)
                     {
                         Console.WriteLine("Error: LoadAndGetAssemblyITestClass({0})...FAILED.", AssemblyName);
-                        continue;
+                        continue; /* Continue to load other assemblies */
                     }
 
                     lsAssemblyClassName.Add(AssemblyClassName);
@@ -100,26 +116,43 @@ namespace AssemblyLoader
             return lsAssemblyClassName;
         }
 
-        public static bool GetFilePath(string repo, string filename, out string filepath)
+        /**
+         * GetFilePath
+         * Returns absolute file path from file name and its containing directory
+         */
+        public static bool GetFilePath(string directory, string filename, out string filepath)
         {
-            DirectoryInfo folder = new DirectoryInfo(repo);
-            FileInfo[] file = folder.GetFiles(filename, SearchOption.AllDirectories);
-
-            if (file.Length == 0)
+            try
             {
-                Console.WriteLine("File ({0}) not found.", filename);
+                DirectoryInfo folder = new DirectoryInfo(directory);
+                FileInfo[] file = folder.GetFiles(filename, SearchOption.AllDirectories);
+
+                if (file.Length == 0)
+                {
+                    Console.WriteLine("Error: File ({0}) not found.", filename);
+                    filepath = null;
+                    return false;
+                }
+
+                //Console.WriteLine("File ({0}) found.", file[0].FullName);
+                filepath = file[0].FullName;
+            }
+            catch (Exception Ex)
+            {
+                Console.WriteLine("Exception : {0}", Ex.Message);
                 filepath = null;
-                return false;
             }
 
-            //Console.WriteLine("File ({0}) found.", file[0].FullName);
-            filepath = file[0].FullName;
             return true;
         }
 
+        /**
+         * DisplayAssemblies
+         * Display all assemblies loaded in given AppDomain
+         */
         public static void DisplayAssemblies(AppDomain Domain)
         {
-            Console.WriteLine("\nListing Assemblies in Domain ({0})", Domain.FriendlyName);
+            Console.WriteLine("\nAssemblies in Domain ({0})", Domain.FriendlyName);
             Assembly[] loadedAssemblies = Domain.GetAssemblies();
 
             foreach (Assembly a in loadedAssemblies)
@@ -128,16 +161,16 @@ namespace AssemblyLoader
 
         static void Main(string[] args)
         {
-            string path = @"E:\Sahil\Syracuse\Study\CSE 681 - SMA\Project\Project 2\TestHarness\Repository";
+            string path = @"..\..\..\Repository";
             Loader DemoLoader = new Loader(path);
             List<string> AssemblyName = new List<string>();
 
-            AssemblyName.Add("TestCode_TestDriver.dll");
-            AssemblyName.Add("TestCode_TestDriver.dll");
+            AssemblyName.Add("SampleDriver.dll");
+            AssemblyName.Add("SampleDriver.dll");
 
-            List<string> ClassName = DemoLoader.LoadAssemblyAndGetItestClass(AssemblyName);
+            List<string> ClassName = DemoLoader.LoadMultipleAssemblies(AssemblyName);
 
-            Console.WriteLine("\nListing ClassName");
+            Console.WriteLine("Listing Class Name");
             foreach (var Name  in ClassName)
             {
                 Console.WriteLine("Class({0})", Name);

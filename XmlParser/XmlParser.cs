@@ -4,6 +4,7 @@
  * 
  * FileName     : XmlParser.cs
  * Author       : Sahil Gupta
+ * Source       : Jim Fawcett
  * Date         : 24 September 2016 
  * Version      : 1.0
  */
@@ -18,31 +19,34 @@ namespace XMLParser
 {
     public class xmlTestInfo
     {
-
         /**********************************************************************
                              M E M B E R S
         **********************************************************************/
 
-        public int Version { get; set; }
-        public string TestName { get; set; }
-        public string Author { get; set; }
-        public DateTime TimeStamp { get; set; }
-        public string TestDriver { get; set; }
-        public List<string> TestCode { get; set; }
+        public int _Version { get; set; }
+        public string _TestName { get; set; }
+        public string _Author { get; set; }
+        public DateTime _TimeStamp { get; set; }
+        public string _TestDriver { get; set; }
+        public List<string> _TestCode { get; set; }
 
         /**********************************************************************
                              P U B L I C   M E T H O D S
         **********************************************************************/
 
+        /**
+         * Display
+         * Display on console contents of current xmlTestInfo instance
+         */
         public void Display()
         {
-            Console.WriteLine("  {0,-12} : {1}", "Version", Version);
-            Console.WriteLine("  {0,-12} : {1}", "Author", Author);
-            Console.WriteLine("  {0,-12} : {1}", "TimeStamp", TimeStamp);
-            Console.WriteLine("  {0,-12} : {1}", "TestName", TestName);
-            Console.WriteLine("  {0,-12} : {1}", "TestDriver", TestDriver);
+            Console.WriteLine("  {0,-12} : {1}", "Version", _Version);
+            Console.WriteLine("  {0,-12} : {1}", "Author", _Author);
+            Console.WriteLine("  {0,-12} : {1}", "TimeStamp", _TimeStamp);
+            Console.WriteLine("  {0,-12} : {1}", "TestName", _TestName);
+            Console.WriteLine("  {0,-12} : {1}", "TestDriver", _TestDriver);
 
-            foreach (string Library  in TestCode)
+            foreach (string Library  in _TestCode)
             {
                 Console.WriteLine("  {0,-12} : {1}", "Library", Library);
             }
@@ -56,8 +60,8 @@ namespace XMLParser
                          M E M B E R S
          **********************************************************************/
         
-        private XDocument xDoc;
-        public List<xmlTestInfo> xmlTestInfoList;
+        private XDocument _xDoc;
+        public List<xmlTestInfo> _xmlTestInfoList;
 
         /**********************************************************************
                      P U B L I C   M E T H O D S
@@ -65,93 +69,126 @@ namespace XMLParser
 
         public XmlParser()
         {
-            xDoc = new XDocument();
-            xmlTestInfoList = new List<xmlTestInfo>();
+            _xDoc = new XDocument();
+            _xmlTestInfoList = new List<xmlTestInfo>();
         }
 
-        public bool ParseTestRequest(string sTestRequest)
+        /**
+         * ParseXmlFile
+         * Read XML file and fill in-memory data-structure xmlTestInfoList to access it
+         */
+        public bool ParseXmlFile(string XmlFilePath)
         {
             FileStream XML = null;
             try
             {
-                Console.WriteLine("\n>>>>Parsing Test Request File (AD:{0})<<<<", AppDomain.CurrentDomain.FriendlyName);
+                //Console.WriteLine("\n>>>>Parsing Test Request File (AD:{0})<<<<", AppDomain.CurrentDomain.FriendlyName);
 
-                XML = new FileStream(sTestRequest, System.IO.FileMode.Open);
-                xDoc = XDocument.Load(XML);
-                if (xDoc == null)
+                /* Open XML file */
+                XML = new FileStream(XmlFilePath, System.IO.FileMode.Open);
+                if (null == XML)
                 {
-                    Console.WriteLine("Error: XDocument.Load({0})... FAILED.", XML);
+                    Console.WriteLine("Error: File Open({0})...FAILED.", XmlFilePath);
                     return false;
                 }
 
-                string Version = xDoc.Descendants("Version").First().Value;
-                string Author = xDoc.Descendants("Author").First().Value;
-                XElement[] xtests = xDoc.Descendants("Test").ToArray();
-
-                int numTests = xtests.Count();
-                for (int i = 0; i < numTests; i++)
+                /* Load contents of XML file */
+                _xDoc = XDocument.Load(XML);
+                if (null == _xDoc)
                 {
-                    xmlTestInfo TestData = new xmlTestInfo();
-
-                    /* Fill in test case data */
-                    TestData.Version = Int32.Parse(Version);
-                    TestData.Author = Author;
-                    TestData.TimeStamp = DateTime.Now;
-
-                    TestData.TestName = xtests[i].Attribute("Name").Value;
-                    TestData.TestDriver = xtests[i].Element("TestDriver").Value;
-
-                    TestData.TestCode = new List<string>();
-                    IEnumerable<XElement> xTestCode = xtests[i].Elements("Library");
-                    foreach (var library in xTestCode)
-                    {
-                        TestData.TestCode.Add(library.Value);
-                    }
-
-                    /* Add this test data to list of test info */
-                    xmlTestInfoList.Add(TestData);
+                    Console.WriteLine("Error: XDocument.Load({0})...FAILED.", XmlFilePath);
+                    return false;
                 }
 
+                /* Get XML tags */
+                string Version = _xDoc.Descendants("Version").First().Value;
+                string Author = _xDoc.Descendants("Author").First().Value;
+                XElement[] xElement = _xDoc.Descendants("Test").ToArray();
+
+                /* Loop for each test driver, extract and store information in xmlTestList */
+                int TestCnt = xElement.Count();
+                for (int i = 0; i < TestCnt; i++)
+                {
+                    xmlTestInfo TestInfo = GetNewTestInfo(Author, Version, xElement[i]);
+                    _xmlTestInfoList.Add(TestInfo);
+                }
             }
             catch (Exception Ex)
             {
                 Console.WriteLine("Exception : {0}", Ex.Message);
+                return false;
             }
             finally
             {
                 if (null != XML)
-                {
                     XML.Close();
-                }
             }
 
             return true;
         }
 
+        /**
+         * GetNewTestInfo
+         * Creates new TestInfo object and fills it with data from XML element
+         */
+        private xmlTestInfo GetNewTestInfo(string Author, string Version, XElement xElement)
+        {
+            xmlTestInfo TestInfo = null;
+
+            try
+            {
+                TestInfo = new xmlTestInfo();
+
+                TestInfo._Version = Int32.Parse(Version);
+                TestInfo._Author = Author;
+                TestInfo._TimeStamp = DateTime.Now;
+                TestInfo._TestName = xElement.Attribute("Name").Value;
+                TestInfo._TestDriver = xElement.Element("TestDriver").Value;
+
+                TestInfo._TestCode = new List<string>();
+                IEnumerable<XElement> xTestCode = xElement.Elements("Library");
+                foreach (var library in xTestCode)
+                {
+                    TestInfo._TestCode.Add(library.Value);
+                }
+            }
+            catch (Exception Ex)
+            {
+                Console.WriteLine("Exception : {0}", Ex.Message);
+            }
+
+            return TestInfo;
+        }
+
+        /**
+         * DisplayTestRequest
+         * Prints on console, information from _xmlTestLinfoList of current instance
+         */
         public void DisplayTestRequest()
         {
-            foreach (xmlTestInfo TestData in xmlTestInfoList)
+            Console.WriteLine("\n-------------------- XML FILE---------------------");
+            foreach (xmlTestInfo TestInfo in _xmlTestInfoList)
             {
-                TestData.Display();
+                TestInfo.Display();
             }
+            Console.WriteLine("--------------------------------------------------");
         }
 
         static void Main(string[] args)
         {
             bool bRet;
-            string XmlPath = @"E:\Sahil\Syracuse\Study\CSE 681 - SMA\Project\Project 2\TestHarness\TestRequest\TestRequest.xml";
+            string XmlPath = @"..\..\..\TestRequest\TestRequest.xml";
 
             XmlParser Parser = new XmlParser();
 
-            bRet = Parser.ParseTestRequest(XmlPath);
+            bRet = Parser.ParseXmlFile(XmlPath);
             if (false == bRet)
             {
-                Console.WriteLine("Parser.ParseTestRequest({0})...FAILED", XmlPath);
+                Console.WriteLine("Error: Parser.ParseTestRequest({0})...FAILED", XmlPath);
                 return;
             }
 
             Parser.DisplayTestRequest();
         }
-
     }
 }
