@@ -47,7 +47,7 @@ namespace FileManager
          */
         private string GetFileName(string Author)
         {
-            return (GetLogRepo() + "\\" + Author + "_" + DateTime.Now.Date.ToString("dd-MM-yyyy") + ".txt");
+            return (GetLogRepo() + "\\" + Author + "_" + DateTime.Now.ToString("dd-MM-yyyy--HH-mm-ss") + ".txt");
         }
 
         /**
