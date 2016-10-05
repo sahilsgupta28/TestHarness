@@ -15,6 +15,9 @@ using System.Collections.Generic;
 
 namespace TestHarness
 {
+    using XMLParser;
+    using FileManager;
+
     class TestExec
     {
         /**********************************************************************
@@ -42,81 +45,62 @@ namespace TestHarness
             TestQueue = new Queue<string>();
         }
 
+        /**
+         * EnqueueTestRequest
+         * Places a Test Request in a Queue
+         */
         public void EnqueueTestRequest(string TestRequestFile)
         {
             TestQueue.Enqueue(TestRequestFile);
-            Console.WriteLine("En-queued ({0})", TestRequestFile);
+            Console.WriteLine("REQUIREMENT 3 : En-queued ({0})", TestRequestFile);
         }
 
+        /**
+         * DequeueTestRequest
+         * Removes a test request from queue
+         */
         public string DequeueTestRequest()
         {
             string TestRequestFile;
 
             TestRequestFile = TestQueue.Dequeue();
-            Console.WriteLine("De-queued ({0})", TestRequestFile);
+            Console.WriteLine("REQUIREMENT 3 : De-queued ({0})", TestRequestFile);
 
             return TestRequestFile;
         }
 
+        /**
+         * ProcessTestRequests
+         * Starts processing of test request
+         */
         public void ProcessTestRequests()
         {
-            bool bRet;
-
-            Console.WriteLine("\nCurrent AppDomain : {0}", AppDomain.CurrentDomain.FriendlyName);
-
             try
             {
+                AppDomainMgr AppDMgr = new AppDomainMgr(RepositoryPath);
+
                 do
                 {
+                    /**
+                     * @todo We may want to create threads and process test request in that
+                     */
+
                     /* De-queue Test Request */
                     string TestRequest = DequeueTestRequest();
 
                     Console.WriteLine("\n====START TEST REQUEST ({0})====", TestRequest);
 
-                    /* Create Application Domain 
-                     * The name of application domain is of format AppDomain followed by current timestamp with milliseconds
-                     * AppDomain - YYMMDD - HHMMSS - FFF
-                     */
-                    AppDomain ChildDomain = AppDomain.CreateDomain("AppDomain-" + DateTime.Now.ToString("yyMMdd-HHmmss-fff"));
-                    Console.WriteLine("Created new application domain ({0})", ChildDomain.FriendlyName);
-
-                    /* Instantiate AppDomainMgr to process individual test request */
-                    Type tAppDMgr = typeof(AppDomainMgr);
-                    AppDomainMgr AppDMgr = (AppDomainMgr)ChildDomain.CreateInstanceAndUnwrap(
-                        Assembly.GetAssembly(tAppDMgr).FullName,
-                        tAppDMgr.ToString(),
-                        false,
-                        BindingFlags.Default,
-                        null,
-                        new object[] { RepositoryPath },
-                        null,
-                        null
-                        );
-                    if (null == AppDMgr)
-                    {
-                        Console.WriteLine("ChildDomain.CreateInstanceAndUnwrap(AppDomainMgr) for ({0})...FAILED.", TestRequest);
-                        continue;
-                    }
-
                     /* Pass test request to app domain */
-                    bRet = AppDMgr.ProcessTestRequest(TestRequest);
+                    bool bRet = AppDMgr.ProcessTestRequest(TestRequest);
                     if (false == bRet)
                     {
-                        Console.WriteLine("{0}({1})...FAILED.", AppDMgr.GetType().FullName, TestRequest);
+                        Console.WriteLine("Error: {0}({1})...FAILED.", AppDMgr.GetType().FullName, TestRequest);
                         continue;
                     }
 
-                    /* Display assemblies loaded in child appdomain */
-                    //AppDMgr.DisplayAssemblies(ChildDomain);
-
-                    Console.WriteLine("Unloading Child AppDomain ({0})", ChildDomain.FriendlyName);
-                    AppDomain.Unload(ChildDomain);
-                    Console.WriteLine("====END TEST REQUEST ({0})====", TestRequest);
+                    Console.WriteLine("====END TEST REQUEST ({0})====\n", TestRequest);
 
                 } while (TestQueue.Count != 0);
-
-                /* Display assemblies loaded in main appdomain */
-                //DisplayAssemblies(AppDomain.CurrentDomain);
             }
             catch (Exception Ex)
             {
@@ -124,13 +108,79 @@ namespace TestHarness
             }
         }
 
-        public void DisplayAssemblies(AppDomain Domain)
+        /**
+         * GetTestRequestResult
+         * Displays result of a particular test request
+         */
+        public void GetTestRequestResult(string TestRequest)
         {
-            Console.WriteLine("\nListing Assemblies in Domain ({0})", Domain.FriendlyName);
-            Assembly[] loadedAssemblies = Domain.GetAssemblies();
+            bool bRet;
+            FileMgr Database = new FileMgr(RepositoryPath);
 
-            foreach (Assembly a in loadedAssemblies)
-                Console.WriteLine("Assembly -> Name: ({0}) Version: ({1})", a.GetName().Name, a.GetName().Version);
+            XmlParser Parser = new XmlParser();
+            bRet = Parser.ParseXmlFile(TestRequest);
+            if (false == bRet)
+            {
+                Console.WriteLine("Error: Parser.ParseTestRequest({0})...FAILED", TestRequest);
+                return;
+            }
+
+            /**
+             * We have the following cases 
+             *  Test is not yet executed 
+             *  Test is still executing
+             *  Test has finished execution
+             */
+
+            /** 
+             * CASE 1 : Test is not yet executed
+             * We may want to check in queue if the test is not yet executed
+             * 
+             * Acquire Lock
+             * Check if TestRequest is in Queue
+             * If yes, release lock and Return
+             */
+
+            /**
+             * CASE 2: Test has finished execution
+             * In this case we have the results on log storage. 
+             * Try accessing storage..
+             */
+            Console.WriteLine("REQUIREMENT 6 & 8 : CLIENT QUERY");
+            bRet = Database.GetDriverTestResult(Parser._xmlTestInfoList[0]._Author, Parser._xmlTestInfoList[0]._TestDriver);
+            if(true == bRet)
+            {
+                return;
+            }
+
+            /** 
+             * CASE 3: Test is still executing
+             * Return proper error saying execution is in progress
+             */
+        }
+
+        /**
+         * GetAuthorTestResult
+         * Gets all test results of a particular author
+         */
+        public void GetAuthorTestResult(string Author)
+        {
+            FileMgr Database = new FileMgr(RepositoryPath);
+
+            Console.WriteLine("REQUIREMENT 8 : ENTIRE LOG FILE (Authors Test)");
+            Database.DisplayAuthorTestDetails(Author);
+        }
+
+        /**
+         * GetTestsSummary
+         * Displays a summary of all tests executed till date
+         */
+        public void GetTestsSummary()
+        {
+            FileMgr Database = new FileMgr(RepositoryPath);
+
+            Console.WriteLine("REQUIREMENT 8 : SIMPLE SUMMARY INFORMATION");
+            Database.DisplayTestSummary();
         }
     }
 }

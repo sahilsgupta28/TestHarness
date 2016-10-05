@@ -4,7 +4,17 @@
  * Entry point for Test Harness
  * 
  * Usage
- *      TestHarness.exe repository_path testrequest1_path [(...)]
+ *      TestHarness.exe /r repository_path /t testrequest1_path [(...)]
+ *      TestHarness.exe /r repository_path /q testrequest1_path
+ *      TestHarness.exe /r repository_path /a AuthorName
+ *      TestHarness.exe /r repository_path /s 
+ *      
+ *      /r Repository   - Path to Repository containing assemblies to be tested
+ *      /t Test Request - XML file specifying test code
+ *      /q Query        - Get test result of specific Test Request
+ *      /a Author       - Get test results of a particular author
+ *      /s Summary      - Get Summary of all tests executed
+ *
  *      
  * FileName     : TestExec.cs
  * Author       : Sahil Gupta
@@ -13,59 +23,93 @@
  */
 
 using System;
+using System.Diagnostics;
 using System.IO;
+
 
 namespace TestHarness
 {
+    
+
     class UI
     {
         static void Main(string[] args)
         {
             try
             {
+                TestExec testexe;
+                
                 /*  Validate input 
                  *  We Expect Repository Path as first input followed by one or more test requests
                  */
-                if (args.Length < 2)
+                if (args.Length < 3)
                 {
-                    Console.WriteLine("Enter Repository Path and one or more Test Request Path");
+                    Console.WriteLine("Error: The syntax of the command is incorrect.");
+                    return;
+                }
+
+                if (@"/r" != args[0])
+                {
+                    Console.WriteLine("Error: Must have Repository Path");
                     return;
                 }
 
                 /* Check if Repository is valid */
-                if (!Directory.Exists(args[0]))
+                if (!Directory.Exists(args[1]))
                 {
-                    Console.WriteLine("Invalid Path {0}", args[0]);
+                    Console.WriteLine("Error: Invalid Path {0}", args[1]);
                     return;
                 }
-                Console.WriteLine("Repository Path : {0}\n", args[0]);
 
-                /* Instantiate new Test Executive to process Test Requests 
-                 * 
-                 * @todo
-                 * Ideally, we would want to create a thread to processing test requests here
-                 * This thread waits on a blocking queue and processes a test request as soon as it is enqueued.
+                /* Instantiate new Test Executive to process Test Requests */
+                testexe = new TestExec(args[1]);
+
+                /** @todo 
+                 *  Ideally, we would want to create a thread to processing test requests here
+                 *  This thread waits on a blocking queue and processes a test request as soon as it is enqueued.
                  */
-                TestExec testexe = new TestExec(args[0]);
 
-                /* Enqueue all test requests */
-                int ReqCnt = 1;
-                do
+                /************************************************************************************************
+                 *                                          USE CASES
+                 ************************************************************************************************/
+
+                /* Client provides Test Request to process */
+                if (@"/t" == args[2])
                 {
-                    /* @todo 
-                     * We would want to continue accepting new test requests here
-                     */
+                    int ReqCnt = 3; // Position of 1st Test Request in Command Line Argument string "args"                
 
-                    /* Enqueue test request */
-                    testexe.EnqueueTestRequest(args[ReqCnt]);
+                    do
+                    {
+                        Console.WriteLine("REQUIREMENT 2 : Accepted Test Requests: ({0})", args[ReqCnt]);
 
-                } while (++ReqCnt != args.Length);
+                        /* Enqueue test request */
+                        testexe.EnqueueTestRequest(args[ReqCnt]);
 
-                /* Process all queued test requests */
-                testexe.ProcessTestRequests();
+                    } while (++ReqCnt != args.Length);
 
+                    /* Process all queued test requests */
+                    testexe.ProcessTestRequests();
+                }
+
+                /* Client wants test result of a particular test request */
+                if (@"/q" == args[2])
+                {
+                    testexe.GetTestRequestResult(args[3]);
+                }
+
+                /* Client wants test results of his tests */
+                if (@"/a" == args[2])
+                {
+                    testexe.GetAuthorTestResult(args[3]);
+                }
+
+                /* Client wants summary of all test requests */
+                if (@"/s" == args[2])
+                {
+                    testexe.GetTestsSummary();
+                }
             }
-            catch(Exception Ex)
+            catch (Exception Ex)
             {
                 Console.WriteLine("Exception: {0}", Ex.Message);
             }
