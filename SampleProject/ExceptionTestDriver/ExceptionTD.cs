@@ -16,6 +16,7 @@ namespace ExceptionTestDriver
 {
     using TestInterface;
     using SampleProject;
+    using System.Reflection;
 
     public class ExceptionTD : MarshalByRefObject, ITest
     {
@@ -52,6 +53,8 @@ namespace ExceptionTestDriver
         public bool test()
         {
             bool bTestResult = true;
+
+            Console.WriteLine("REQUIREMENT 5: Test Driver ({0}) Current AppDomain ({1})", Assembly.GetExecutingAssembly().ToString(), AppDomain.CurrentDomain.FriendlyName);
 
             // Call Test Function 1
             demoTestCode.Display("Simulating Tests");

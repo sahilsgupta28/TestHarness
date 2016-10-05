@@ -8,9 +8,6 @@
  * Version      : 1.0
  */
 
-/* Define if you want to enable debug logs */
-//#define ENABLE_DEBUG_LOGS
-
 using System;
 using System.IO;
 using System.Reflection;
@@ -79,9 +76,7 @@ namespace TestHarness
                     /* De-queue Test Request */
                     string TestRequest = DequeueTestRequest();
 
-                    #if ENABLE_DEBUG_LOGS
                     Console.WriteLine("\n====START TEST REQUEST ({0})====", TestRequest);
-                    #endif
 
                     /* Pass test request to app domain */
                     bool bRet = AppDMgr.ProcessTestRequest(TestRequest);
@@ -91,9 +86,7 @@ namespace TestHarness
                         continue;
                     }
 
-                    #if ENABLE_DEBUG_LOGS
                     Console.WriteLine("====END TEST REQUEST ({0})====\n", TestRequest);
-                    #endif
 
                 } while (TestQueue.Count != 0);
             }
@@ -126,12 +119,16 @@ namespace TestHarness
         public void GetLogSummary()
         {
             FileMgr Database = new FileMgr(RepositoryPath + "\\Log.txt");
+
+            Console.WriteLine("REQUIREMENT 8 : SIMPLE SUMMARY INFORMATION");
             Database.DisplayTestSummary();
         }
 
         public void GetLogFile()
         {
             FileMgr Database = new FileMgr(RepositoryPath + "\\Log.txt");
+
+            Console.WriteLine("REQUIREMENT 8 : ENTIRE LOG FILE");
             Database.DisplayLog();
         }
     }

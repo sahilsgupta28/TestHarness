@@ -83,7 +83,7 @@ namespace FileManager
                 // IDisposable.Dispose on the stream object.
                 using (StreamWriter w = new StreamWriter(_FilePath, true))
                 {
-                    w.WriteLine("{0}", GetTestStartTag(DriverName));
+                    w.WriteLine("\n{0}", GetTestStartTag(DriverName));
                     w.WriteLine("Author : {0}", Author);
                     w.WriteLine("DriverName : {0}", DriverName);
                     w.WriteLine("Test Status : {0}", TestStatus);
@@ -165,7 +165,7 @@ namespace FileManager
                 {
 
                     Console.WriteLine("-------------------------- T E S T   S U M M A R Y ----------------------------");
-                    Console.WriteLine("{0,-25}{1,-20}{2,-20}{3,-10}","Time Stamp","Author","Driver Name","Status");
+                    Console.WriteLine("{0,-25}{1,-20}{2,-10}{3,-20}","Time Stamp","Author","Status", "Driver Name");
                 }
                 else
                 {
@@ -184,7 +184,7 @@ namespace FileManager
                         string TestStatus = dbRow.Substring("Test Status : ".Length);
                         dbRow = sr.ReadLine();
                         string TimeStamp = dbRow.Substring("TimeStamp  : ".Length);
-                        Console.WriteLine("{0,-25}{1,-20}{2,-20}{3,-10}", TimeStamp, Author, DriverName, TestStatus);
+                        Console.WriteLine("{0,-25}{1,-20}{2,-10}{3,-20}", TimeStamp, Author, TestStatus, DriverName);
                     }
                 }
                 Console.WriteLine("-------------------------------------------------------------------------------");

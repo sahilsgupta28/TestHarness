@@ -1,13 +1,7 @@
-TestHarness\bin\Release\TestHarness -repo .\Repository -test .\TestRequest\TestRequest.xml
-pause
-cls
+TestHarness\bin\Release\TestHarness /r .\Repository /t .\TestRequest\SampleCodeTestRequest.xml .\TestRequest\XmlParserTestRequest.xml
 
-TestHarness\bin\Release\TestHarness -repo .\Repository -query .\TestRequest\TestRequest.xml
-pause
-cls
+TestHarness\bin\Release\TestHarness /r .\Repository /q .\TestRequest\SampleCodeTestRequest.xml
 
-TestHarness\bin\Release\TestHarness -repo .\Repository  -querySummary
-pause
-cls
+TestHarness\bin\Release\TestHarness /r .\Repository /s
 
-TestHarness\bin\Release\TestHarness -repo .\Repository  -queryall
+TestHarness\bin\Release\TestHarness /r .\Repository /l

@@ -70,6 +70,7 @@ namespace AssemblyLoader
                     /* Check if type derives from ITest Interface */
                     if (t.IsClass && typeof(ITest).IsAssignableFrom(t))
                     {
+                        Console.WriteLine("REQUIREMENT 4: Class ({0}) derives from iTest Interface", t.FullName);
                         return t.FullName;
                     }
                 }

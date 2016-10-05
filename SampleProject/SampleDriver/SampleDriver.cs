@@ -13,6 +13,7 @@ using System.Text;
 
 namespace SampleProject
 {
+    using System.Reflection;
     using TestInterface;
 
     public class TestDriver : MarshalByRefObject, ITest
@@ -51,6 +52,8 @@ namespace SampleProject
         {
             bool bTestResult = true;
 
+            Console.WriteLine("REQUIREMENT 5: Test Driver ({0}) Current AppDomain ({1})", Assembly.GetExecutingAssembly().ToString(), AppDomain.CurrentDomain.FriendlyName);
+
             // Call Test Function 1
             demoTestCode.Display("Simulating Tests");
             ResultLog.AppendLine("demoTestCode.Display...PASS.");
@@ -81,15 +84,6 @@ namespace SampleProject
             }
             else
                 ResultLog.AppendLine("demoTestCode.Simulate_Handled_Exception()...PASS.");
-
-            // Call Test Function 4 ...UnHandled Exception
-            if (false == demoTestCode.Simulate_UnHandled_Exception())
-            {
-                ResultLog.AppendLine("demoTestCode.Simulate_UnHandled_Exception()...FAIL.");
-                bTestResult = false;
-            }
-            else
-                ResultLog.AppendLine("demoTestCode.Simulate_UnHandled_Exception()...PASS.");
 
             return bTestResult;
         }

@@ -13,6 +13,7 @@ using System.Text;
 
 namespace XmlParserTestDriver
 {
+    using System.Reflection;
     using TestInterface;
     using XMLParser;
 
@@ -43,7 +44,10 @@ namespace XmlParserTestDriver
         {
             bool bTestResult = true;
 
-            string XmlPath = @"..\..\..\TestRequest\SampleCodeTestRequest.xml";
+            Console.WriteLine("REQUIREMENT 5: Current AppDomain ({0})", AppDomain.CurrentDomain.FriendlyName);
+
+            //string XmlPath = @"..\..\..\TestRequest\SampleCodeTestRequest.xml";
+            string XmlPath = @".\TestRequest\SampleCodeTestRequest.xml";
 
             bTestResult = Parser.ParseXmlFile(XmlPath);
             if (false == bTestResult)

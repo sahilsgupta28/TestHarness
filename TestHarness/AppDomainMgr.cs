@@ -106,7 +106,7 @@ namespace TestHarness
                 * AppDomain - YYMMDD - HHMMSS - FFF
                 */
                 AppDomain ChildDomain = AppDomain.CreateDomain("AppDomain-" + DateTime.Now.ToString("yyMMdd-HHmmss-fff"));
-                Console.WriteLine("Created new application domain ({0})", ChildDomain.FriendlyName);
+                Console.WriteLine("REQUIREMENT 5: New AppDomain ({0})", ChildDomain.FriendlyName);
 
                 /* Instantiate Loader */
                 Type tLoader = typeof(Loader);
@@ -141,7 +141,6 @@ namespace TestHarness
                     try
                     {
                         Console.WriteLine("\nTesting ({0})", Info.TestDriverDLL);
-                        Console.WriteLine("--------------------------");
 
                         ITest TestDriverInstance = GetITestInstance(ChildDomain, Info.TestDriverDLL, Info.TestDriverClass);
                         if (null == TestDriverInstance)
@@ -150,24 +149,31 @@ namespace TestHarness
                             continue;
                         }
 
+                        Console.WriteLine(".........................");
                         TestStatus = TestDriverInstance.test();
                         if (TestStatus)
                             Console.WriteLine("<<<Test PASS>>>");
                         else
                             Console.WriteLine("<<<Test FAIL>>>");
+                        Console.WriteLine(".........................");
 
+                        
                         ResultLog = TestDriverInstance.getLog();
+                        Console.WriteLine("REQUIREMENT 4: Invoking getLog() from iTest interface");
+                        Console.WriteLine("{0}", ResultLog);
                     }
                     catch (Exception Ex)
                     {
                         ResultLog = "Exception : " + Ex.Message;
                         Console.WriteLine("<<<Test FAIL>>>");
+                        Console.WriteLine("Caught Exception : {0}", ResultLog);
                     }
 
                     Database.WriteLog(Info.Author, Info.TestDriverClass, ResultLog, TestStatus ? "PASS" : "FAIL");
+                    
                 }
 
-                Console.WriteLine("\nUnloading Child AppDomain ({0})", ChildDomain.FriendlyName);
+                Console.WriteLine("REQUIREMENT 5: Unloading Child AppDomain ({0})", ChildDomain.FriendlyName);
                 AppDomain.Unload(ChildDomain);
             }
             catch (Exception Ex)
