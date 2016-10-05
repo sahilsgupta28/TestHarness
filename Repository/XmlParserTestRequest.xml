@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<TestRequest>
+  <Version>1</Version>
+  <Author>Sahil</Author>
+    <Test Name ="XML Parser">
+    <TestDriver>XmlParserTestDriver.dll</TestDriver>
+    <Library>XmlParser.dll</Library>
+  </Test>
+</TestRequest>

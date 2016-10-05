@@ -186,7 +186,7 @@ namespace TestHarness
         static void Main(string[] args)
         {
             string path = @"..\..\..\Repository";
-            string XmlPath = @"..\..\..\TestRequest\SampleCodeTestRequest.xml";
+            string XmlPath = path + @"\SampleCodeTestRequest.xml";
 
             TestExec testexe = new TestExec(path);
 

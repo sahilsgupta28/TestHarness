@@ -46,8 +46,7 @@ namespace XmlParserTestDriver
 
             Console.WriteLine("REQUIREMENT 5: Test Driver ({0}) Current AppDomain ({1})", Assembly.GetExecutingAssembly().ToString(), AppDomain.CurrentDomain.FriendlyName);
 
-            //string XmlPath = @"..\..\..\TestRequest\SampleCodeTestRequest.xml";
-            string XmlPath = @".\TestRequest\SampleCodeTestRequest.xml";
+            string XmlPath = @".\SampleCodeTestRequest.xml";
 
             bTestResult = Parser.ParseXmlFile(XmlPath);
             if (false == bTestResult)
