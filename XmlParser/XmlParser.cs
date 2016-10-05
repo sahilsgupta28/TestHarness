@@ -177,7 +177,7 @@ namespace XMLParser
         static void Main(string[] args)
         {
             bool bRet;
-            string XmlPath = @"..\..\..\TestRequest\TestRequest.xml";
+            string XmlPath = @"..\..\..\TestRequest\SampleCodeTestRequest.xml";
 
             XmlParser Parser = new XmlParser();
 

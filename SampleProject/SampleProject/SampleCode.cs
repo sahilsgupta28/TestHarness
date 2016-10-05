@@ -1,4 +1,14 @@
-﻿using System;
+﻿/**
+ * Sample Code
+ * Sample code to simulate various tests for Test Harness
+ * 
+ * FileName     : SampleCode.cs
+ * Author       : Sahil Gupta
+ * Date         : 24 September 2016 
+ * Version      : 1.0
+ */
+
+using System;
 
 namespace SampleProject
 {
@@ -6,18 +16,18 @@ namespace SampleProject
     {
         public void Display(string msg)
         {
-            Console.WriteLine("TestCode::Display({0})", msg);
+            Console.WriteLine("Display Message ({0}).", msg);
         }
 
         public bool Simulate_Pass_Test()
         {
-            Console.WriteLine("Simulating a pass test");
+            Console.WriteLine("Simulating a pass test.");
             return true;
         }
 
         public bool Simulate_Fail_Test()
         {
-            Console.WriteLine("Simulating a fail test");
+            Console.WriteLine("Simulating a fail test.");
             return false;
         }
 
@@ -25,7 +35,8 @@ namespace SampleProject
         {
             try
             {
-                Console.WriteLine("Simulating Handled Exception");
+                Console.WriteLine("Simulating Handled Exception.");
+
                 int i = 0;
                 int j = 5 / i;
             }
@@ -39,7 +50,8 @@ namespace SampleProject
 
         public bool Simulate_UnHandled_Exception()
         {
-            Console.WriteLine("Simulating Un-Handled Exception");
+            Console.WriteLine("Simulating Un-Handled Exception.");
+
             int i = 0;
             int j = 5 / i;
 
@@ -48,14 +60,20 @@ namespace SampleProject
 
         static void Main(string[] args)
         {
-            SampleCode tc = new SampleCode();
+            try
+            {
+                SampleCode tc = new SampleCode();
 
-            tc.Display("Simulating Tests");
-            Console.WriteLine("tc.Simulate_Pass_Test() : {0}", tc.Simulate_Pass_Test() ? "TRUE" : "FALSE");
-            Console.WriteLine("tc.Simulate_Fail_Test() : {0}", tc.Simulate_Fail_Test() ? "TRUE" : "FALSE");
-            Console.WriteLine("tc.Simulate_Handled_Exception() : {0}", tc.Simulate_Handled_Exception() ? "TRUE" : "FALSE");
-            //Console.WriteLine("tc.Simulate_UnHandled_Exception() : {0}", tc.Simulate_UnHandled_Exception() ? "TRUE" : "FALSE");
-
+                tc.Display("Simulating Tests");
+                Console.WriteLine("tc.Simulate_Pass_Test() : {0}", tc.Simulate_Pass_Test() ? "TRUE" : "FALSE");
+                Console.WriteLine("tc.Simulate_Fail_Test() : {0}", tc.Simulate_Fail_Test() ? "TRUE" : "FALSE");
+                Console.WriteLine("tc.Simulate_Handled_Exception() : {0}", tc.Simulate_Handled_Exception() ? "TRUE" : "FALSE");
+                Console.WriteLine("tc.Simulate_UnHandled_Exception() : {0}", tc.Simulate_UnHandled_Exception() ? "TRUE" : "FALSE");
+            }
+            catch (Exception Ex)
+            {
+                Console.WriteLine("Exception : {0}", Ex.Message);
+            }
         }
     }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<TestRequest>
+  <Version>1</Version>
+  <Author>Sahil Gupta</Author>
+  <Test Name ="Sample Exception Test">
+    <TestDriver>ExceptionTestDriver.dll</TestDriver>
+    <Library>SampleProject.dll</Library>
+  </Test>
+  <Test Name ="Sample Test">
+    <TestDriver>SampleDriver.dll</TestDriver>
+    <Library>SampleProject.dll</Library>
+  </Test>
+</TestRequest>

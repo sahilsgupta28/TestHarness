@@ -124,7 +124,7 @@ namespace TestHarness
                     TestInfo.TestDriverClass = load.LoadAssembly(TestInfo.TestDriverDLL);
                     if (null == TestInfo.TestDriverClass)
                     {
-                        Console.WriteLine("load.LoadAssemblyAndGetItestClass({0})...FAILED", TestInfo.TestDriverDLL);
+                        Console.WriteLine("load.LoadAssembly({0})...FAILED", TestInfo.TestDriverDLL);
                         //return false;
                     }
 

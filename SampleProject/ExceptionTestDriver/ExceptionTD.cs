@@ -1,21 +1,23 @@
 ﻿/**
- * Sample Test Driver
- * Simulates a Test Driver for projects
+ * Sample Exception Test Driver
+ * Simulates a Test Driver for projects with unhandled exception
  * 
- * FileName     : SampleDriver.cs
+ * FileName     : ExceptionTD.cs
  * Author       : Sahil Gupta
- * Date         : 24 September 2016 
+ * Date         : 5 October 2016 
  * Version      : 1.0
  */
+
 
 using System;
 using System.Text;
 
-namespace SampleProject
+namespace ExceptionTestDriver
 {
     using TestInterface;
+    using SampleProject;
 
-    public class TestDriver : MarshalByRefObject, ITest
+    public class ExceptionTD : MarshalByRefObject, ITest
     {
         /**********************************************************************
                                 M E M B E R S
@@ -28,7 +30,7 @@ namespace SampleProject
                                 P U B L I C   M E T H O D S
          **********************************************************************/
 
-        public TestDriver()
+        public ExceptionTD()
         {
             demoTestCode = new SampleCode();
             ResultLog = new StringBuilder();
@@ -40,7 +42,7 @@ namespace SampleProject
          */
         public static ITest create()
         {
-            return new TestDriver();
+            return new ExceptionTD();
         }
 
         /**
@@ -54,33 +56,6 @@ namespace SampleProject
             // Call Test Function 1
             demoTestCode.Display("Simulating Tests");
             ResultLog.AppendLine("demoTestCode.Display...PASS.");
-
-            // Call Test Function 2 ...Positive Test
-            if (false == demoTestCode.Simulate_Pass_Test())
-            {
-                ResultLog.AppendLine("demoTestCode.Simulate_Pass_Test()...FAIL.");
-                bTestResult = false;
-            }
-            else
-                ResultLog.AppendLine("demoTestCode.Simulate_Pass_Test()...PASS.");
-
-            // Call Test Function 2 ...Negative Test
-            if (false == demoTestCode.Simulate_Fail_Test())
-            {
-                ResultLog.AppendLine("demoTestCode.Simulate_Fail_Test()...FAIL.");
-                bTestResult = false;
-            }
-            else
-                ResultLog.AppendLine("demoTestCode.Simulate_Fail_Test()...PASS.");
-
-            // Call Test Function 3 ...Handled Exception
-            if (false == demoTestCode.Simulate_Handled_Exception())
-            {
-                ResultLog.AppendLine("demoTestCode.Simulate_Handled_Exception()...FAIL.");
-                bTestResult = false;
-            }
-            else
-                ResultLog.AppendLine("demoTestCode.Simulate_Handled_Exception()...PASS.");
 
             // Call Test Function 4 ...UnHandled Exception
             if (false == demoTestCode.Simulate_UnHandled_Exception())
@@ -109,7 +84,7 @@ namespace SampleProject
             {
                 Console.WriteLine("Local test:\n");
 
-                ITest test = TestDriver.create();
+                ITest test = ExceptionTD.create();
 
                 if (test.test() == true)
                 {
