@@ -1,6 +1,6 @@
 ﻿/**
  * Test Executive
- * Serializes test requests and creates new app domain to process individual test request
+ * Test Harness program to execute test drivers in isolated Application Domains
  *      
  * FileName     : TestExec.cs
  * Author       : Sahil Gupta
@@ -18,7 +18,7 @@ namespace TestHarness
     using XMLParser;
     using FileManager;
 
-    class TestExec
+    public class TestExec
     {
         /**********************************************************************
                                  M E M B E R S
@@ -181,6 +181,20 @@ namespace TestHarness
 
             Console.WriteLine("REQUIREMENT 8 : SIMPLE SUMMARY INFORMATION");
             Database.DisplayTestSummary();
+        }
+
+        static void Main(string[] args)
+        {
+            string path = @"..\..\..\Repository";
+            string XmlPath = @"..\..\..\TestRequest\SampleCodeTestRequest.xml";
+
+            TestExec testexe = new TestExec(path);
+
+            testexe.EnqueueTestRequest(XmlPath);
+            testexe.ProcessTestRequests();
+            testexe.GetTestRequestResult(XmlPath);
+            testexe.GetAuthorTestResult("Sahil");
+            testexe.GetTestsSummary();
         }
     }
 }

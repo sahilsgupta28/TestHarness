@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileMgr", "FileMgr\FileMgr.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlParserTestDriver", "XmlParserTestDriver\XmlParserTestDriver.csproj", "{683CE900-E980-4358-AEC5-BCACBCFFA3E7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI", "UI\UI.csproj", "{EC263FCD-ADD6-4279-B923-C8B7909CFAA2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,10 @@ Global
 		{683CE900-E980-4358-AEC5-BCACBCFFA3E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{683CE900-E980-4358-AEC5-BCACBCFFA3E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{683CE900-E980-4358-AEC5-BCACBCFFA3E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC263FCD-ADD6-4279-B923-C8B7909CFAA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC263FCD-ADD6-4279-B923-C8B7909CFAA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC263FCD-ADD6-4279-B923-C8B7909CFAA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC263FCD-ADD6-4279-B923-C8B7909CFAA2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

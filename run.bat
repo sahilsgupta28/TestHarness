@@ -1,8 +1,8 @@
-TestHarness\bin\Release\TestHarness /r .\Repository /t .\TestRequest\SampleCodeTestRequest.xml .\TestRequest\XmlParserTestRequest.xml
+UI\bin\Release\UI /r .\Repository /t .\TestRequest\SampleCodeTestRequest.xml .\TestRequest\XmlParserTestRequest.xml
 
-TestHarness\bin\Release\TestHarness /r .\Repository /q .\TestRequest\SampleCodeTestRequest.xml
+UI\bin\Release\UI /r .\Repository /q .\TestRequest\SampleCodeTestRequest.xml
 
-TestHarness\bin\Release\TestHarness /r .\Repository /a "Sahil"
+UI\bin\Release\UI /r .\Repository /a "Sahil"
 
-TestHarness\bin\Release\TestHarness /r .\Repository /s
+UI\bin\Release\UI /r .\Repository /s
 
