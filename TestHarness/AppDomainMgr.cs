@@ -85,6 +85,8 @@ namespace TestHarness
          */
         public bool ProcessTestRequest(string sTestRequest)
         {
+            AppDomain ChildDomain = null;
+
             try
             {
                 bool bRet;
@@ -108,7 +110,7 @@ namespace TestHarness
                 * The name of application domain is of format AppDomain followed by current timestamp with milliseconds
                 * AppDomain - YYMMDD - HHMMSS - FFF
                 */
-                AppDomain ChildDomain = AppDomain.CreateDomain("AppDomain-" + DateTime.Now.ToString("yyMMdd-HHmmss-fff"));
+                ChildDomain = AppDomain.CreateDomain("AppDomain-" + DateTime.Now.ToString("yyMMdd-HHmmss-fff"));
                 Console.WriteLine("REQUIREMENT 5: New AppDomain ({0})", ChildDomain.FriendlyName);
 
                 /* Instantiate Loader */
@@ -136,13 +138,18 @@ namespace TestHarness
 
                 /* Execute Test in AppDomain */
                 ExecuteTest(ChildDomain);
-
-                Console.WriteLine("REQUIREMENT 5: Unloading Child AppDomain ({0})", ChildDomain.FriendlyName);
-                AppDomain.Unload(ChildDomain);
             }
             catch (Exception Ex)
             {
                 Console.WriteLine("Exception : {0}", Ex.Message);
+            }
+            finally
+            {
+                if (null != ChildDomain)
+                {
+                    Console.WriteLine("REQUIREMENT 5: Unloading Child AppDomain ({0})", ChildDomain.FriendlyName);
+                    AppDomain.Unload(ChildDomain);
+                }
             }
             return true;
         }
