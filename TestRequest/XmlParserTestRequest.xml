@@ -2,7 +2,7 @@
 
 <TestRequest>
   <Version>1</Version>
-  <Author>Sahil Gupta</Author>
+  <Author>Sahil</Author>
     <Test Name ="XML Parser">
     <TestDriver>XmlParserTestDriver.dll</TestDriver>
     <Library>XmlParser.dll</Library>

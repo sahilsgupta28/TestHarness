@@ -45,12 +45,20 @@ namespace TestHarness
             TestQueue = new Queue<string>();
         }
 
+        /**
+         * EnqueueTestRequest
+         * Places a Test Request in a Queue
+         */
         public void EnqueueTestRequest(string TestRequestFile)
         {
             TestQueue.Enqueue(TestRequestFile);
             Console.WriteLine("REQUIREMENT 3 : En-queued ({0})", TestRequestFile);
         }
 
+        /**
+         * DequeueTestRequest
+         * Removes a test request from queue
+         */
         public string DequeueTestRequest()
         {
             string TestRequestFile;
@@ -61,6 +69,10 @@ namespace TestHarness
             return TestRequestFile;
         }
 
+        /**
+         * ProcessTestRequests
+         * Starts processing of test request
+         */
         public void ProcessTestRequests()
         {
             try
@@ -96,10 +108,14 @@ namespace TestHarness
             }
         }
 
-        public void GetLogTestRequest(string TestRequest)
+        /**
+         * GetTestRequestResult
+         * Displays result of a particular test request
+         */
+        public void GetTestRequestResult(string TestRequest)
         {
             bool bRet;
-            FileMgr Database = new FileMgr(RepositoryPath + "\\Log.txt");
+            FileMgr Database = new FileMgr(RepositoryPath);
 
             XmlParser Parser = new XmlParser();
             bRet = Parser.ParseXmlFile(TestRequest);
@@ -109,27 +125,62 @@ namespace TestHarness
                 return;
             }
 
-            foreach (xmlTestInfo test in Parser._xmlTestInfoList)
+            /**
+             * We have the following cases 
+             *  Test is not yet executed 
+             *  Test is still executing
+             *  Test has finished execution
+             */
+
+            /** 
+             * CASE 1 : Test is not yet executed
+             * We may want to check in queue if the test is not yet executed
+             * 
+             * Acquire Lock
+             * Check if TestRequest is in Queue
+             * If yes, release lock and Return
+             */
+
+            /**
+             * CASE 2: Test has finished execution
+             * In this case we have the results on log storage. 
+             * Try accessing storage..
+             */
+            Console.WriteLine("REQUIREMENT 6 & 8 : CLIENT QUERY");
+            bRet = Database.GetDriverTestResult(Parser._xmlTestInfoList[0]._Author, Parser._xmlTestInfoList[0]._TestDriver);
+            if(true == bRet)
             {
-                Console.WriteLine("<<<{0}>>>", test._TestDriver);
-                Console.WriteLine("{0}", Database.GetDriverTestResult(test._TestDriver));
+                return;
             }
+
+            /** 
+             * CASE 3: Test is still executing
+             * Return proper error saying execution is in progress
+             */
         }
 
-        public void GetLogSummary()
+        /**
+         * GetAuthorTestResult
+         * Gets all test results of a particular author
+         */
+        public void GetAuthorTestResult(string Author)
         {
-            FileMgr Database = new FileMgr(RepositoryPath + "\\Log.txt");
+            FileMgr Database = new FileMgr(RepositoryPath);
+
+            Console.WriteLine("REQUIREMENT 8 : ENTIRE LOG FILE (Authors Test)");
+            Database.DisplayAuthorTestDetails(Author);
+        }
+
+        /**
+         * GetTestsSummary
+         * Displays a summary of all tests executed till date
+         */
+        public void GetTestsSummary()
+        {
+            FileMgr Database = new FileMgr(RepositoryPath);
 
             Console.WriteLine("REQUIREMENT 8 : SIMPLE SUMMARY INFORMATION");
             Database.DisplayTestSummary();
-        }
-
-        public void GetLogFile()
-        {
-            FileMgr Database = new FileMgr(RepositoryPath + "\\Log.txt");
-
-            Console.WriteLine("REQUIREMENT 8 : ENTIRE LOG FILE");
-            Database.DisplayLog();
         }
     }
 }
