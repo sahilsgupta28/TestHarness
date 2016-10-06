@@ -1,0 +1,4 @@
+Execute build.bat to build the solution with sample test drivers.
+
+The batch files must be executed from parent of directory containing the Test Harness solution file.
+build.bat must be executed from Developer Command Prompt for VS2015 to ensure devenv is found.
